@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown'; // Importando o SelectDropdown
 import { StackNavigationProp } from '@react-navigation/stack';
+
+import { fetchDrivers } from '../services/driver'; // Importe a função que busca os motoristas
+import { fetchTrucks } from '../services/truck'; // Importando a função que busca os caminhões
+
 export type RootStackParamList = {
   Home: undefined; // Home não recebe parâmetros
   DestinationPoint: undefined; // Scanner não recebe parâmetros
@@ -13,67 +17,90 @@ type Props = {
   navigation: HomeScreenNavigationProp;
 };
 
+type Truck = {
+  plate: string; // Adicione outras propriedades, se existirem
+};
+
 export default function HomeScreen({ navigation }: Props) {
   const [nome, setNome] = useState<string>(''); // Estado para o nome
-  const [rut, setRut] = useState<string>(''); 
-  const [patente, setPatente] = useState<string>(''); 
+  const [rut, setRut] = useState<string>('');
+  const [patente, setPatente] = useState<string>('');
   const [erro, setErro] = useState<string>(''); // Estado para mensagem de erro
+  const [motoristas, setMotoristas] = useState<any[]>([]); // Estado para armazenar motoristas
+  const [loading, setLoading] = useState<boolean>(true); // Estado para controlar o carregamento
+  const [patentesfetch, setPatentesFetch] = useState<string[]>([]); // Estado para patentes buscadas
 
-  const nomes = [
-    'João', 'Maria', 'Carlos', 'Ana', 'Pedro', 'Fernanda', 'Rafael', 'Luciana', 'Roberta', 'Gustavo'
-  ]; // Lista de nomes para o select
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const drivers = await fetchDrivers();
+        const trucks = await fetchTrucks();
 
-  const patentes = [
-    'ABC1234', 'DEF5678', 'GHI9012', 'JKL3456', 'MNO7890', 
-    'PQR1122', 'STU3344', 'VWX5566', 'YZA7788', 'BCD9900'
-  ];// Lista de patentes para o select
+        setMotoristas(drivers); // Armazena os motoristas
+        setPatentesFetch(trucks.map((truck: Truck) => truck.plate));// Extrai as placas (patentes) e armazena
+      } catch (error) {
+        console.error('Erro ao buscar dados:', error);
+        setErro('Falha ao carregar os dados.');
+      } finally {
+        setLoading(false); // Finaliza o carregamento
+      }
+    };
+
+    loadData();
+  }, []); // O array vazio significa que isso será chamado uma vez, quando o componente for montado
 
   const handleLogin = () => {
-    // Verificar se os campos estão vazios
     if (!nome || !rut || !patente) {
       setErro('Por favor, preencha todos os campos obrigatórios.');
-      return; // Não prossegue se algum campo estiver vazio
+      return;
     }
 
-    // Limpar mensagem de erro caso todos os campos estejam preenchidos
+    const motoristaSelecionado = motoristas.find(driver => driver.name === nome);
+
+    if (!motoristaSelecionado) {
+      setErro('Motorista não encontrado.');
+      return;
+    }
+
+    if (motoristaSelecionado.rutNumber !== rut) {
+      setErro('RUT incorreto para o motorista selecionado.');
+      return;
+    }
+
     setErro('');
-    console.log('Login', nome, rut, patente);
-    navigation.navigate('DestinationPoint'); 
+    console.log('Login bem-sucedido', nome, rut, patente);
+    navigation.navigate('DestinationPoint');
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Exibindo a imagem da logo */}
       <Image source={require('../assets/logo.png')} style={styles.logo} />
 
-      {/* Nome - Seletor de opções (SelectDropdown) */}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Nombre:</Text>
-        <SelectDropdown
-          data={nomes} // Usando a lista de nomes
-          onSelect={(selectedItem) => setNome(selectedItem)} // Atualiza o estado com o nome selecionado
-          renderButton={(selectedItem, isOpened) => {
-            return (
+        {loading ? (
+          <Text>Carregando motoristas...</Text>
+        ) : (
+          <SelectDropdown
+            data={motoristas.map(driver => driver.name)}
+            onSelect={(selectedItem) => setNome(selectedItem)}
+            renderButton={(selectedItem) => (
               <View style={styles.dropdownButtonStyle}>
                 <Text style={styles.dropdownButtonTxtStyle}>
-                  {selectedItem || 'Selecione seu nome'} {/* Condicional para exibir texto */}
+                  {selectedItem || 'Selecione seu nome'}
                 </Text>
               </View>
-            );
-          }}
-          renderItem={(item, index, isSelected) => {
-            return (
+            )}
+            renderItem={(item, index, isSelected) => (
               <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
                 <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
               </View>
-            );
-          }}
-          showsVerticalScrollIndicator={false}
-          dropdownStyle={styles.dropdownMenuStyle}
-        />
+            )}
+            dropdownStyle={styles.dropdownMenuStyle}
+          />
+        )}
       </View>
 
-      {/* RUT */}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>RUT:</Text>
         <TextInput
@@ -85,37 +112,33 @@ export default function HomeScreen({ navigation }: Props) {
         />
       </View>
 
-      {/* Patente - Novo Dropdown */}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Patente:</Text>
-        <SelectDropdown
-          data={patentes} // Usando a lista de patentes
-          onSelect={(selectedItem) => setPatente(selectedItem)} // Atualiza o estado com a patente selecionada
-          renderButton={(selectedItem, isOpened) => {
-            return (
+        {loading ? (
+          <Text>Carregando patentes...</Text>
+        ) : (
+          <SelectDropdown
+            data={patentesfetch} // Usando as patentes buscadas
+            onSelect={(selectedItem) => setPatente(selectedItem)}
+            renderButton={(selectedItem) => (
               <View style={styles.dropdownButtonStyle}>
                 <Text style={styles.dropdownButtonTxtStyle}>
-                  {selectedItem || 'Selecione sua patente'} {/* Condicional para exibir texto */}
+                  {selectedItem || 'Selecione sua patente'}
                 </Text>
               </View>
-            );
-          }}
-          renderItem={(item, index, isSelected) => {
-            return (
+            )}
+            renderItem={(item, index, isSelected) => (
               <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
                 <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
               </View>
-            );
-          }}
-          showsVerticalScrollIndicator={false}
-          dropdownStyle={styles.dropdownMenuStyle}
-        />
+            )}
+            dropdownStyle={styles.dropdownMenuStyle}
+          />
+        )}
       </View>
 
-      {/* Exibindo a mensagem de erro, se houver */}
       {erro ? <Text style={styles.error}>{erro}</Text> : null}
 
-      {/* Botão de login com fundo azul */}
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
@@ -127,13 +150,13 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: '#F1F1F1',
-    alignItems: 'center',  // Centraliza horizontalmente
-    justifyContent: 'center',  // Centraliza verticalmente
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 20,
   },
   logo: {
-    width: 200, // Largura da logo
-    height: 200, // Altura da logo
+    width: 200,
+    height: 200,
     marginBottom: 20,
   },
   inputContainer: {

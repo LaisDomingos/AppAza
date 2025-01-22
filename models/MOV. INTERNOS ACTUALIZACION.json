@@ -1,0 +1,270 @@
+{
+    "puertosDescargaPorChatarra": [
+        {
+            "tipo": "Hoyito/Iman",
+            "datos": [
+                {
+                    "codigoSap": "56000132",
+                    "nombreSap": "CONSUMO-CHATARRA MOLIDO",
+                    "nombreApp": "MOLIDO",
+                    "codigo3Digitos": "013"
+                },
+                {
+                    "codigoSap": "56000133",
+                    "nombreSap": "CONSUMO-CHATARRA VIRUTA",
+                    "nombreApp": "VIRUTA",
+                    "codigo3Digitos": "038"
+                },
+                {
+                    "codigoSap": "56000134",
+                    "nombreSap": "CONSUMO-CHATARRA FIERRO FUNDIDO",
+                    "nombreApp": "FIERRO FUNDIDO CORTO",
+                    "codigo3Digitos": "042"
+                },
+                {
+                    "codigoSap": "56000136",
+                    "nombreSap": "CONSUMO-CHATARRA CARACHAS",
+                    "nombreApp": "CARACHAS",
+                    "codigo3Digitos": "039"
+                },
+                {
+                    "codigoSap": "56000139",
+                    "nombreSap": "CONSUMO-CHATARRA OXICORTE (PROCESADA)",
+                    "nombreApp": "OXICORTE PROCESADO EN ISLA XXXX",
+                    "codigo3Digitos": "017 al 026"
+                },
+                {
+                    "codigoSap": "56000139",
+                    "nombreSap": "CONSUMO-CHATARRA OXICORTE (PROCESADA)",
+                    "nombreApp": "OXICORTE EXTERNO",
+                    "codigo3Digitos": "041"
+                },
+                {
+                    "codigoSap": "56000143",
+                    "nombreSap": "CONSUMO-CHATARRA BRIQUETA MIXTA",
+                    "nombreApp": "BRIQUETA MIXTA",
+                    "codigo3Digitos": "016"
+                },
+                {
+                    "codigoSap": "56000501",
+                    "nombreSap": "CONSUMO-CHATARRA MOLIDO RECUPERADO",
+                    "nombreApp": "MOLIDO RECUPERADO",
+                    "codigo3Digitos": "030"
+                },
+                {
+                    "codigoSap": "56000511",
+                    "nombreSap": "CONSUMO-CHATARRA SHREDDED",
+                    "nombreApp": "SHREDDER",
+                    "codigo3Digitos": "040"
+                },
+                {
+                    "codigoSap": "56000523",
+                    "nombreSap": "CONSUMO-CHATARRA BOLAS",
+                    "nombreApp": "BOLAS",
+                    "codigo3Digitos": "031"
+                },
+                {
+                    "codigoSap": "56000524",
+                    "nombreSap": "CONSUMO-CHATARRA PRENSA PROCESADA",
+                    "nombreApp": "PRENSA PROCESADA EXTERNA",
+                    "codigo3Digitos": "029"
+                }
+            ]
+        },
+        {
+            "tipo": "Prensa 1023/Prensa 1225/Shredder",
+            "datos": [
+                {
+                    "codigoSap": "50000409",
+                    "nombreSap": "CHATARRA G MIXTA LIVIANA PARA PRENSA",
+                    "nombreApp": "G MIXTA LIVIANA",
+                    "codigo3Digitos": "010"
+                },
+                {
+                    "codigoSap": "50000411",
+                    "nombreSap": "CHATARRA K MIXTA PESADA PRENSA",
+                    "nombreApp": "K MIXTA PESADA",
+                    "codigo3Digitos": "011"
+                },
+                {
+                    "codigoSap": "50000415",
+                    "nombreSap": "CHATARRA P BRIQUETA PRENSA P. PROCESAR",
+                    "nombreApp": "BRIQUETA P PARA PROCESAR",
+                    "codigo3Digitos": "012"
+                },
+                {
+                    "codigoSap": "50000432",
+                    "nombreSap": "CHATARRA E BRIQUETA MIXTA",
+                    "nombreApp": "BRIQUETA E MIXTA",
+                    "codigo3Digitos": "016"
+                },
+                {
+                    "codigoSap": "50000405",
+                    "nombreSap": "CHATARRA B MOLIDO",
+                    "nombreApp": "MOLIDO",
+                    "codigo3Digitos": "013"
+                },
+                {
+                    "codigoSap": "50000413",
+                    "nombreSap": "CHATARRA B1 MOLIDO PRENSA PROCESADA",
+                    "nombreApp": "PRENSA PROCESADA EXTERNA",
+                    "codigo3Digitos": "029"
+                }
+            ]
+        },
+        {
+            "tipo": "Oxicorte",
+            "datos": [
+                {
+                    "codigoSap": "50000416",
+                    "nombreSap": "CHATARRA C PESADA PARA PROCESAR",
+                    "nombreApp": "C PESADA PARA PROCESAR",
+                    "codigo3Digitos": "027"
+                },
+                {
+                    "codigoSap": "50000414",
+                    "nombreSap": "CHATARRA N PESADA SOBREDIMENSION",
+                    "nombreApp": "N PESADA PARA PROCESAR",
+                    "codigo3Digitos": "044"
+                },
+                {
+                    "codigoSap": "50000412",
+                    "nombreSap": "CHATARRA M FIERRO FUNDIDO",
+                    "nombreApp": "M FIERRO FUNDIDO PARA PROCESAR",
+                    "codigo3Digitos": "043"
+                },
+                {
+                    "codigoSap": "50000411",
+                    "nombreSap": "CHATARRA G MIXTALIVIANA PRENSA",
+                    "nombreApp": "G MIXTA LIVIANA",
+                    "codigo3Digitos": "010"
+                },
+                {
+                    "codigoSap": "50000409",
+                    "nombreSap": "CHATARRA K MIXTA PESADA PRENSA",
+                    "nombreApp": "K MIXTA PESADA",
+                    "codigo3Digitos": "011"
+                }
+            ]
+        },
+        {
+            "tipo": "Patio Sur",
+            "datos": [
+                {
+                    "codigoSap": "56000132",
+                    "nombreSap": "CONSUMO-CHATARRA MOLIDO",
+                    "nombreApp": "MOLIDO",
+                    "codigo3Digitos": "013"
+                },
+                {
+                    "codigoSap": "56000139",
+                    "nombreSap": "CONSUMO-CHATARRA OXICORTE (PROCESADA)",
+                    "nombreApp": "OXICORTE PROCESADO EN ISLA XXXX",
+                    "codigo3Digitos": "016 al 027"
+                },
+                {
+                    "codigoSap": "56000139",
+                    "nombreSap": "CONSUMO-CHATARRA OXICORTE (PROCESADA)",
+                    "nombreApp": "OXICORTE EXTERNO",
+                    "codigo3Digitos": "041"
+                },
+                {
+                    "codigoSap": "56000143",
+                    "nombreSap": "CONSUMO-CHATARRA BRIQUETA MIXTA",
+                    "nombreApp": "BRIQUETA E MIXTA",
+                    "codigo3Digitos": "016"
+                },
+                {
+                    "codigoSap": "56000133",
+                    "nombreSap": "CONSUMO-CHATARRA VIRUTA",
+                    "nombreApp": "VIRUTA",
+                    "codigo3Digitos": "039"
+                },
+                {
+                    "codigoSap": "56000136",
+                    "nombreSap": "CONSUMO-CHATARRA CARACHAS",
+                    "nombreApp": "CARACHAS",
+                    "codigo3Digitos": "039"
+                },
+                {
+                    "codigoSap": "56000134",
+                    "nombreSap": "CONSUMO-CHATARRA FIERRO FUNDIDO",
+                    "nombreApp": "FIERRO FUNDIDO CORTO",
+                    "codigo3Digitos": "042"
+                },
+                {
+                    "codigoSap": "56000511",
+                    "nombreSap": "CONSUMO-CHATARRA SHREDDED",
+                    "nombreApp": "SHREDDER",
+                    "codigo3Digitos": "040"
+                },
+                {
+                    "codigoSap": "56000524",
+                    "nombreSap": "CONSUMO-CHATARRA PRENSA PROCESADA",
+                    "nombreApp": "PRENSA PROCESADA EXTERNA",
+                    "codigo3Digitos": "029"
+                },
+                {
+                    "codigoSap": "56000523",
+                    "nombreSap": "CONSUMO-CHATARRA BOLAS",
+                    "nombreApp": "BOLAS",
+                    "codigo3Digitos": "031"
+                },
+                {
+                    "codigoSap": "56000501",
+                    "nombreSap": "CONSUMO-CHATARRA MOLIDO RECUPERADO",
+                    "nombreApp": "MOLIDO RECUPERADO",
+                    "codigo3Digitos": "030"
+                },
+                {
+                    "codigoSap": "56000142",
+                    "nombreSap": "CONSUMO-CHATARRA ESPECIAL",
+                    "nombreApp": "ESPECIAL CORTO",
+                    "codigo3Digitos": "015"
+                },
+                {
+                    "codigoSap": "50000416",
+                    "nombreSap": "CHATARRA C PESADA PARA PROCESAR",
+                    "nombreApp": "C PESADA PARA PROCESAR",
+                    "codigo3Digitos": "027"
+                },
+                {
+                    "codigoSap": "50000409",
+                    "nombreSap": "CHATARRA G MIXTA LIVIANA PARA PRENSA",
+                    "nombreApp": "G MIXTA LIVIANA",
+                    "codigo3Digitos": "010"
+                },
+                {
+                    "codigoSap": "50000411",
+                    "nombreSap": "CHATARRA K MIXTA PESADA PRENSA",
+                    "nombreApp": "K MIXTA PESADA",
+                    "codigo3Digitos": "011"
+                },
+                {
+                    "codigoSap": "50000412",
+                    "nombreSap": "CHATARRA M FIERRO FUNDIDO",
+                    "nombreApp": "M FIERRO FUNDIDO PARA PROCESAR",
+                    "codigo3Digitos": "043"
+                },
+                {
+                    "codigoSap": "50000414",
+                    "nombreSap": "CHATARRA N PESADA SOBREDIMENSION",
+                    "nombreApp": "N PESADA PARA PROCESAR",
+                    "codigo3Digitos": "044"
+                },
+                {
+                    "codigoSap": "50000415",
+                    "nombreSap": "CHATARRA P BRIQUETA PRENSA P. PROCESAR",
+                    "nombreApp": "BRIQUETA P PARA PROCESAR",
+                    "codigo3Digitos": "012"
+                },
+                {
+                    "codigoSap": null,
+                    "nombreSap": null,
+                    "nombreApp": "TIERRA",
+                    "codigo3Digitos": "037"
+                }
+            ]
+        }
+    ]
+}

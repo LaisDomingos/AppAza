@@ -1,42 +1,42 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React from 'react'; 
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Certifique-se de que react-native-vector-icons esteja instalado
 
-// Pre-step, call this before any NFC operations
 NfcManager.start();
 
 function ScannerScreen() {
   async function readNdef() {
     try {
-      // register for the NFC tag with NDEF in it
       await NfcManager.requestTechnology(NfcTech.Ndef);
-      // the resolved tag object will contain `ndefMessage` property
       const tag = await NfcManager.getTag();
-      console.warn('Tag found', tag);
+
+      console.warn('Tag completa:', tag); // Inspecione o objeto retornado
+
+      if (tag?.id) {
+        const cardNumber = tag.id; // Substitua por outro campo, se necessário
+        Alert.alert('Cartão Lido', `Número do cartão (RFID): ${cardNumber}`);
+      } else {
+        Alert.alert('Erro', 'Não foi possível encontrar o número do cartão.');
+      }
     } catch (ex) {
-      console.warn('Oops!', ex);
+      console.warn('Erro ao ler a tag:', ex);
+      Alert.alert('Erro', 'Ocorreu um erro ao tentar ler a tag NFC.');
     } finally {
-      // stop the nfc scanning
       NfcManager.cancelTechnologyRequest();
     }
   }
 
   return (
     <View style={styles.wrapper}>
-      {/* Icone representando o celular se aproximando do Wi-Fi */}
       <View style={styles.iconContainer}>
-        <Icon name="wifi" size={80} color="#0066cc" style={styles.wifiIcon} />
         <Image
-          source={require('../assets/nfc-phone.png')} // Substitua pelo caminho correto da imagem de um celular
-          style={styles.phoneIcon}
+          source={require('../assets/nfc-phone.png')}
+          style={styles.phoneImage}
         />
       </View>
 
-      {/* Título */}
       <Text style={styles.title}>NFC Scanner</Text>
 
-      {/* Botão estilizado */}
       <TouchableOpacity style={styles.button} onPress={readNdef}>
         <Text style={styles.buttonText}>Scan a Tag</Text>
       </TouchableOpacity>
@@ -49,20 +49,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f8f9fa', // Fundo claro para contraste
+    backgroundColor: '#f8f9fa',
   },
   iconContainer: {
     marginBottom: 40,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  wifiIcon: {
-    position: 'absolute',
-    top: 20,
-  },
-  phoneIcon: {
-    width: 100,
-    height: 100,
+  phoneImage: {
+    width: 200,
+    height: 200,
     resizeMode: 'contain',
   },
   title: {
@@ -80,7 +76,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
-    elevation: 5, // Para sombras no Android
+    elevation: 5,
   },
   buttonText: {
     color: '#fff',
