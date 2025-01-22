@@ -3,8 +3,8 @@ import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, ScrollView 
 import SelectDropdown from 'react-native-select-dropdown'; // Importando o SelectDropdown
 import { StackNavigationProp } from '@react-navigation/stack';
 
-import { fetchDrivers } from '../services/driver'; // Importe a função que busca os motoristas
-import { fetchTrucks } from '../services/truck'; // Importando a função que busca os caminhões
+import { fetchDrivers } from '../services/get/driver'; // Importe a função que busca os motoristas
+import { fetchTrucks } from '../services/get/truck'; // Importando a função que busca os caminhões
 
 export type RootStackParamList = {
   Home: undefined; // Home não recebe parâmetros

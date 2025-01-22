@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { fetchMovInternos } from '../services/get/destinationPoint'; // Atualize o caminho
 
 export type RootStackParamList = {
     Scanner: undefined;
@@ -18,13 +19,38 @@ export default function DestinationPoint({ navigation }: Props) {
     const [selectedSetor, setSelectedSetor] = useState<string | null>(null);
     const [selectedMaterial, setSelectedMaterial] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [jsonData, setJsonData] = useState<any>(null); // Estado para armazenar dados do JSON
+    const [setores, setSetores] = useState<string[]>([]); // Corrigido para um array de strings
+    const [materiaisPorSetor, setMateriaisPorSetor] = useState<Record<string, string[]>>({}); // Estado para armazenar materiais por setor
 
-    const setores = ['Setor A', 'Setor B', 'Setor C'];
-    const materiaisPorSetor: Record<string, string[]> = {
-        'Setor A': ['Material A1', 'Material A2', 'Material A3'],
-        'Setor B': ['Material B1', 'Material B2', 'Material B3'],
-        'Setor C': ['Material C1', 'Material C2', 'Material C3'],
-    };
+    useEffect(() => {
+        // Busca os dados do JSON ao montar o componente
+        const loadJsonData = async () => {
+            try {
+                const data = await fetchMovInternos();
+                setJsonData(data);
+                console.log('Dados do JSON:', data); // Exibe os dados no console
+
+                // Exibe todos os setores no console
+                const setoresData = data?.map((item: any) => item.setor);
+                console.log('Setores:', setoresData); // Mostra todos os setores no console
+                setSetores(setoresData || []); // Atualiza o estado com os setores
+
+                // Acessando os materiais e associando a seus setores
+                const materiaisPorSetor = data?.reduce((acc: any, item: any) => {
+                    acc[item.setor] = item.materiais.map((material: any) => material.nombreApp);
+                    return acc;
+                }, {});
+
+                console.log('Materiais por Setor:', materiaisPorSetor); // Exibe os materiais por setor
+                setMateriaisPorSetor(materiaisPorSetor); // Atualiza o estado com os materiais por setor
+            } catch (error) {
+                console.error('Erro ao carregar dados do JSON:', error);
+            }
+        };
+
+        loadJsonData();
+    }, []);
 
     const handleStart = () => {
         if (!selectedSetor) {
@@ -78,11 +104,11 @@ export default function DestinationPoint({ navigation }: Props) {
                 />
             </View>
 
-            {selectedSetor && (
+            {selectedSetor && materiaisPorSetor[selectedSetor] && (
                 <View style={styles.inputContainer}>
                     <Text style={styles.label}>Material:</Text>
                     <SelectDropdown
-                        data={materiaisPorSetor[selectedSetor]}
+                        data={materiaisPorSetor[selectedSetor] || []}
                         onSelect={(material) => {
                             setSelectedMaterial(material);
                             setErrorMessage(null); // Remove erro ao selecionar
@@ -110,7 +136,6 @@ export default function DestinationPoint({ navigation }: Props) {
                 </View>
             )}
 
-            {/* Mensagem de erro exibida acima do botão */}
             {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
 
             <TouchableOpacity style={styles.button} onPress={handleStart}>

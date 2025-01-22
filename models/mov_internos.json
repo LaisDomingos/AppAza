@@ -1,8 +1,8 @@
 {
     "puertosDescargaPorChatarra": [
         {
-            "tipo": "Hoyito/Iman",
-            "datos": [
+            "setor": "Hoyito/Iman",
+            "materiais": [
                 {
                     "codigoSap": "56000132",
                     "nombreSap": "CONSUMO-CHATARRA MOLIDO",
@@ -72,8 +72,8 @@
             ]
         },
         {
-            "tipo": "Prensa 1023/Prensa 1225/Shredder",
-            "datos": [
+            "setor": "Prensa 1023/Prensa 1225/Shredder",
+            "materiais": [
                 {
                     "codigoSap": "50000409",
                     "nombreSap": "CHATARRA G MIXTA LIVIANA PARA PRENSA",
@@ -113,8 +113,8 @@
             ]
         },
         {
-            "tipo": "Oxicorte",
-            "datos": [
+            "setor": "Oxicorte",
+            "materiais": [
                 {
                     "codigoSap": "50000416",
                     "nombreSap": "CHATARRA C PESADA PARA PROCESAR",
@@ -148,8 +148,8 @@
             ]
         },
         {
-            "tipo": "Patio Sur",
-            "datos": [
+            "setor": "Patio Sur",
+            "materiais": [
                 {
                     "codigoSap": "56000132",
                     "nombreSap": "CONSUMO-CHATARRA MOLIDO",
