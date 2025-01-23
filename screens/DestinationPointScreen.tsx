@@ -5,11 +5,11 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { fetchMovInternos } from '../services/get/destinationPoint'; // Atualize o caminho
 
 export type RootStackParamList = {
-    Scanner: undefined;
+    StartRoute: undefined;
     DestinationPoint: undefined;
 };
 
-type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Scanner'>;
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'DestinationPoint'>;
 
 type Props = {
     navigation: HomeScreenNavigationProp;
@@ -45,7 +45,7 @@ export default function DestinationPoint({ navigation }: Props) {
 
         setErrorMessage(null); // Remove a mensagem de erro ao prosseguir
         console.log('Setor selecionado:', selectedSetor);
-        navigation.navigate('Scanner');
+        navigation.navigate('StartRoute');
     };
 
     return (

@@ -6,6 +6,8 @@ import HomeScreen from './screens/HomeScreen'; // Tela inicial
 import LoadingScreen from './screens/LoadingScreen'; // Tela de carregamento
 import DestinationPointScreen from './screens/DestinationPointScreen';
 import ScannerScreen from './screens/ScannerScreen';
+import StartRouteSreen from './screens/StartRouteScreen';
+
 const Stack = createStackNavigator();
 
 export type RootStackParamList = {
@@ -31,7 +33,7 @@ function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator initialRouteName="StartRoute">
         <Stack.Screen
           name="Home"
           component={HomeScreen}
@@ -40,12 +42,17 @@ function App() {
         <Stack.Screen
           name="DestinationPoint"
           component={DestinationPointScreen}
-          options={{ title: 'Destination Point' }}
+          options={{ title: 'Puesto de Descarga' }}
         />
-        <Stack.Screen
+         <Stack.Screen
           name="Scanner"
           component={ScannerScreen}
-          options={{ title: 'Scanner Screen' }}
+          options={{ title: 'Scanner' }}
+        />
+        <Stack.Screen
+          name="StartRoute"
+          component={StartRouteSreen}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

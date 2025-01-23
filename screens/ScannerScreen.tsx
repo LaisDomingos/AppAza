@@ -1,28 +1,104 @@
-import React from 'react'; 
-import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
-import NfcManager, { NfcTech } from 'react-native-nfc-manager';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, Platform } from 'react-native';
+import NfcManager from 'react-native-nfc-manager';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import Geolocation from 'react-native-geolocation-service';
+import { PermissionsAndroid } from 'react-native'; // Para permissões no Android
 
-NfcManager.start();
+export type RootStackParamList = {
+  Scanner: undefined;
+  StartRoute: undefined;
+};
 
-function ScannerScreen() {
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'StartRoute'>;
+
+type Props = {
+  navigation: HomeScreenNavigationProp;
+};
+
+export default function ScannerScreen({ navigation }: Props) {
+  const [readingCount, setReadingCount] = useState(0);
+
+  // Função para solicitar permissões de localização no Android
+  async function requestLocationPermission() {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Permissão de Localização',
+            message: 'Este aplicativo precisa acessar sua localização.',
+            buttonNeutral: 'Perguntar depois',
+            buttonNegative: 'Cancelar',
+            buttonPositive: 'OK',
+          }
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    }
+    return true; // iOS gerencia permissões automaticamente
+  }
+
+  // Função principal para obter a localização e escanear a tag NFC
+  async function getLocationAndScan() {
+    const hasPermission = await requestLocationPermission();
+    if (!hasPermission) {
+      Alert.alert('Erro', 'Permissão de localização não concedida.');
+      return;
+    }
+
+    Geolocation.getCurrentPosition(
+      position => {
+        const { latitude, longitude } = position.coords;
+        console.log('Localização capturada: ', { latitude, longitude });
+
+        // Após capturar a localização, execute o scanner
+        readNdef();
+      },
+      error => {
+        console.warn('Erro ao obter localização:', error);
+        Alert.alert('Erro', 'Não foi possível obter a localização.');
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 10000,
+      }
+    );
+  }
+
+  // Função de leitura da tag NFC
   async function readNdef() {
     try {
-      await NfcManager.requestTechnology(NfcTech.Ndef);
-      const tag = await NfcManager.getTag();
+      // Simula a leitura da tag com um ID falso
+      const tag = {
+        id: '1234567890abcdef', // ID falso da tag
+      };
 
-      console.warn('Tag completa:', tag); // Inspecione o objeto retornado
+      console.warn('Tag completa:', tag);
 
       if (tag?.id) {
-        const cardNumber = tag.id; // Substitua por outro campo, se necessário
-        Alert.alert('Cartão Lido', `Número do cartão (RFID): ${cardNumber}`);
+        const cardNumber = tag.id;
+        Alert.alert('Cartão Lido', `Número do cartão (RFID): ${cardNumber}`, [
+          {
+            text: 'OK',
+            onPress: () => {
+              setTimeout(() => {
+                navigation.navigate('StartRoute');
+              }, 2000);
+            },
+          },
+        ]);
       } else {
         Alert.alert('Erro', 'Não foi possível encontrar o número do cartão.');
       }
     } catch (ex) {
       console.warn('Erro ao ler a tag:', ex);
       Alert.alert('Erro', 'Ocorreu um erro ao tentar ler a tag NFC.');
-    } finally {
-      NfcManager.cancelTechnologyRequest();
     }
   }
 
@@ -37,7 +113,7 @@ function ScannerScreen() {
 
       <Text style={styles.title}>NFC Scanner</Text>
 
-      <TouchableOpacity style={styles.button} onPress={readNdef}>
+      <TouchableOpacity style={styles.button} onPress={getLocationAndScan}>
         <Text style={styles.buttonText}>Scan a Tag</Text>
       </TouchableOpacity>
     </View>
@@ -84,5 +160,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-
-export default ScannerScreen;
