@@ -17,33 +17,18 @@ type Props = {
 
 export default function DestinationPoint({ navigation }: Props) {
     const [selectedSetor, setSelectedSetor] = useState<string | null>(null);
-    const [selectedMaterial, setSelectedMaterial] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [jsonData, setJsonData] = useState<any>(null); // Estado para armazenar dados do JSON
     const [setores, setSetores] = useState<string[]>([]); // Corrigido para um array de strings
-    const [materiaisPorSetor, setMateriaisPorSetor] = useState<Record<string, string[]>>({}); // Estado para armazenar materiais por setor
 
     useEffect(() => {
         // Busca os dados do JSON ao montar o componente
         const loadJsonData = async () => {
             try {
                 const data = await fetchMovInternos();
-                setJsonData(data);
-                console.log('Dados do JSON:', data); // Exibe os dados no console
 
-                // Exibe todos os setores no console
-                const setoresData = data?.map((item: any) => item.setor);
-                console.log('Setores:', setoresData); // Mostra todos os setores no console
+                // Aqui, os dados estão no formato de um array de setores
+                const setoresData = data?.map((item: any) => item);
                 setSetores(setoresData || []); // Atualiza o estado com os setores
-
-                // Acessando os materiais e associando a seus setores
-                const materiaisPorSetor = data?.reduce((acc: any, item: any) => {
-                    acc[item.setor] = item.materiais.map((material: any) => material.nombreApp);
-                    return acc;
-                }, {});
-
-                console.log('Materiais por Setor:', materiaisPorSetor); // Exibe os materiais por setor
-                setMateriaisPorSetor(materiaisPorSetor); // Atualiza o estado com os materiais por setor
             } catch (error) {
                 console.error('Erro ao carregar dados do JSON:', error);
             }
@@ -58,14 +43,8 @@ export default function DestinationPoint({ navigation }: Props) {
             return;
         }
 
-        if (!selectedMaterial) {
-            setErrorMessage('Por favor, selecione um material.');
-            return;
-        }
-
         setErrorMessage(null); // Remove a mensagem de erro ao prosseguir
         console.log('Setor selecionado:', selectedSetor);
-        console.log('Material selecionado:', selectedMaterial);
         navigation.navigate('Scanner');
     };
 
@@ -79,7 +58,6 @@ export default function DestinationPoint({ navigation }: Props) {
                     data={setores}
                     onSelect={(setor) => {
                         setSelectedSetor(setor);
-                        setSelectedMaterial(null);
                         setErrorMessage(null); // Remove erro ao selecionar
                     }}
                     renderButton={(selectedItem) => (
@@ -103,38 +81,6 @@ export default function DestinationPoint({ navigation }: Props) {
                     dropdownStyle={styles.dropdownMenuStyle}
                 />
             </View>
-
-            {selectedSetor && materiaisPorSetor[selectedSetor] && (
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>Material:</Text>
-                    <SelectDropdown
-                        data={materiaisPorSetor[selectedSetor] || []}
-                        onSelect={(material) => {
-                            setSelectedMaterial(material);
-                            setErrorMessage(null); // Remove erro ao selecionar
-                        }}
-                        renderButton={(selectedItem) => (
-                            <View style={styles.dropdownButtonStyle}>
-                                <Text style={styles.dropdownButtonTxtStyle}>
-                                    {selectedItem || 'Selecione um material'}
-                                </Text>
-                            </View>
-                        )}
-                        renderItem={(item, _, isSelected) => (
-                            <View
-                                style={{
-                                    ...styles.dropdownItemStyle,
-                                    ...(isSelected && { backgroundColor: '#D2D9DF' }),
-                                }}
-                            >
-                                <Text style={styles.dropdownItemTxtStyle}>{item}</Text>
-                            </View>
-                        )}
-                        showsVerticalScrollIndicator={false}
-                        dropdownStyle={styles.dropdownMenuStyle}
-                    />
-                </View>
-            )}
 
             {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
 
