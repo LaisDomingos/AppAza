@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+} from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 export type RootStackParamList = {
-  Scanner: undefined; 
-  StartRoute: undefined; 
+  Scanner: undefined;
+  StartRoute: undefined;
 };
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'StartRoute'>;
@@ -13,147 +19,122 @@ type Props = {
   navigation: HomeScreenNavigationProp;
 };
 
-type Truck = {
-  plate: string; // Adicione outras propriedades, se existirem
-};
-
 export default function StartRouteScreen({ navigation }: Props) {
   const [isFinished, setIsFinished] = useState(false);
 
   const handleStartRoute = () => {
-    if (!isFinished) {
-      navigation.navigate('Scanner');
-      //setIsFinished(true);
-      
-    } else {
-      Alert.alert('Trajeto concluído!', 'O caminhão chegou ao destino final.');
-    }
+    navigation.navigate('Scanner');
+    setIsFinished(true); // Quando o botão for pressionado, marca como "finalizado"
   };
 
   return (
-    <View style={styles.wrapper}>
+     <View style={styles.container}>
+      <Image source={require('../assets/logo.png')} style={styles.logo} />
       <Text style={styles.title}>Início do Trajeto</Text>
 
-      {/* Container do trajeto */}
-      <View style={styles.routeContainer}>
-        {/* Linha pontilhada conectando os pontos */}
-        <View style={styles.dottedLine} />
+      <View style={styles.progressContainer}> 
+        <View style={[styles.progressBar, { width: '50%' }]} /> 
+      </View>
 
-        {/* Ponto de Início */}
-        <View style={styles.startPoint}>
+      <View style={styles.pointsContainer}>
+      <View style={styles.point}>
           <Image
-            source={require('../assets/location.png')} // Ícone de localização inicial
+            source={require('../assets/location.png')}
             style={styles.locationIcon}
           />
-          {!isFinished && (
-            <Image
-              source={require('../assets/truck.png')} // Caminhão na posição inicial
-              style={styles.truckImage}
-            />
-          )}
+          <Text style={styles.pointText}>Início</Text>
         </View>
 
-        {/* Ponto de Fim */}
-        <View style={styles.endPoint}>
+        <View style={styles.point}>
           <Image
-            source={require('../assets/location.png')} // Ícone de localização final
+            source={require('../assets/truck.png')}
+            style={styles.truckImage}
+          />
+        </View>
+
+        <View style={styles.point}>
+          <Image
+            source={require('../assets/location.png')}
             style={styles.locationIcon}
           />
-          {isFinished && (
-            <Image
-              source={require('../assets/truck.png')} // Caminhão na posição final
-              style={styles.truckImage}
-            />
-          )}
+          <Text style={styles.pointText}>Fim</Text>
         </View>
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleStartRoute}>
-        <Text style={styles.buttonText}>
-          {isFinished ? 'Trajeto Concluído' : 'Scanner'}
-        </Text>
+        <Text style={styles.buttonText}>Scanner</Text> 
       </TouchableOpacity>
+
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
+  container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: '#f0f4f8',
     padding: 20,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 20,
-    marginTop: 50
-  },
-  routeContainer: {
-    flex: 1,
-    width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
   },
-  dottedLine: {
-    position: 'absolute',
-    width: 2,
-    height: '60%',
-    left: '50%',
-    top: '20%',
-    borderStyle: 'dotted', // Estilo pontilhado
-    borderWidth: 2,
-    borderColor: '#0066cc',
-  }, 
-  startPoint: {
-    position: 'absolute',
-    top: '10%',
-    left: '45%', // movendo mais para a esquerda
-    marginLeft: -15,
-    alignItems: 'center',
+  logo: {
+    width: 200,
+    height: 200,
+    marginBottom: 20,
   },
-  endPoint: {
-    position: 'absolute',
-    top: '80%',
-    left: '45%',
-    marginLeft: -15,
-    alignItems: 'center',
-  },
-  pointLabel: {
-    fontSize: 16,
-    fontWeight: '600',
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
     color: '#333',
-    marginTop: 5,
+    marginBottom: 30,
+  },
+  progressContainer: {
+    width: '90%',
+    height: 10,
+    backgroundColor: '#dcdcdc',
+    borderRadius: 5,
+    overflow: 'hidden',
+    marginVertical: 30,
+  },
+  progressBar: {
+    height: '100%',
+    backgroundColor: '#4caf50',
+    borderRadius: 5,
+  },
+  pointsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '80%',
+  },
+  point: {
+    alignItems: 'center',
   },
   locationIcon: {
-    width: 70,
-    height: 70,
-    marginBottom: 5,
-    marginTop: 0
+    width: 50,
+    height: 50,
+    marginBottom: 10,
   },
   truckImage: {
-    width: 40,
-    height: 100,
+    width: 150,
+    height: 50,
+  },
+  pointText: {
+    fontSize: 16,
+    color: '#555',
   },
   button: {
+    marginTop: 30,
     backgroundColor: '#0066cc',
     paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 5,
-    marginTop: 20,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    elevation: 3,
   },
   buttonText: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
 });
-

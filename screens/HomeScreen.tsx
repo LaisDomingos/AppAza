@@ -8,7 +8,7 @@ import { fetchTrucks } from '../services/get/truck'; // Importando a função qu
 
 export type RootStackParamList = {
   Home: undefined; // Home não recebe parâmetros
-  DestinationPoint: undefined; // Scanner não recebe parâmetros
+  DestinationPoint: { nome_driver: string; patente: string }; 
 };
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
@@ -69,7 +69,10 @@ export default function HomeScreen({ navigation }: Props) {
 
     setErro('');
     console.log('Login bem-sucedido', nome, rut, patente);
-    navigation.navigate('DestinationPoint');
+    navigation.navigate('DestinationPoint', {
+      nome_driver: nome,
+      patente: patente,
+    });
   };
 
   return (

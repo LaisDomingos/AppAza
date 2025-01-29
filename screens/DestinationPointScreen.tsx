@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
 import SelectDropdown from 'react-native-select-dropdown';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { fetchMovInternos } from '../services/get/destinationPoint'; // Atualize o caminho
+import { fetchMovInternos } from '../services/get/destinationPoint';
+import fetchDriver from '../services/post/driver_truck';
 
 export type RootStackParamList = {
     StartRoute: undefined;
@@ -13,39 +16,96 @@ type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Destina
 
 type Props = {
     navigation: HomeScreenNavigationProp;
+    route: any;
 };
 
-export default function DestinationPoint({ navigation }: Props) {
+export default function DestinationPoint({ navigation, route }: Props) {
+    const { nome_driver, patente } = route.params;
     const [selectedSetor, setSelectedSetor] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [setores, setSetores] = useState<string[]>([]); // Corrigido para um array de strings
+    const [setores, setSetores] = useState<string[]>([]);
 
     useEffect(() => {
-        // Busca os dados do JSON ao montar o componente
         const loadJsonData = async () => {
             try {
                 const data = await fetchMovInternos();
-
-                // Aqui, os dados estão no formato de um array de setores
                 const setoresData = data?.map((item: any) => item);
-                setSetores(setoresData || []); // Atualiza o estado com os setores
+                setSetores(setoresData || []);
             } catch (error) {
                 console.error('Erro ao carregar dados do JSON:', error);
             }
         };
 
+        // Tenta enviar os dados armazenados localmente quando o componente é montado
+        sendSavedData();
         loadJsonData();
     }, []);
 
-    const handleStart = () => {
+    const saveDataLocally = async (data: object) => {
+        try {
+            const savedData = await AsyncStorage.getItem('@pending_data');
+            const parsedData = savedData ? JSON.parse(savedData) : [];
+            parsedData.push(data);
+            await AsyncStorage.setItem('@pending_data', JSON.stringify(parsedData));
+            console.log('Dados salvos localmente:', parsedData);
+        } catch (error) {
+            console.error('Erro ao salvar dados localmente:', error);
+        }
+    };
+
+    const sendSavedData = async () => {
+        try {
+            const savedData = await AsyncStorage.getItem('@pending_data');
+            if (!savedData) return;
+
+            const parsedData = JSON.parse(savedData);
+            for (const item of parsedData) {
+                try {
+                    await fetchDriver(item);
+                    console.log('Dados enviados com sucesso:', item);
+                } catch (error) {
+                    console.error('Erro ao enviar dados:', error);
+                    return; // Para tentar novamente no próximo ciclo
+                }
+            }
+            await AsyncStorage.removeItem('@pending_data');
+        } catch (error) {
+            console.error('Erro ao enviar dados salvos:', error);
+        }
+    };
+
+    const handleStart = async () => {
         if (!selectedSetor) {
             setErrorMessage('Por favor, selecione um setor.');
             return;
         }
 
-        setErrorMessage(null); // Remove a mensagem de erro ao prosseguir
+        setErrorMessage(null);
         console.log('Setor selecionado:', selectedSetor);
-        navigation.navigate('StartRoute');
+
+        const driverData = {
+            driver_name: nome_driver,
+            plate: patente,
+            destination_name: selectedSetor,
+        };
+
+        try {
+            const networkState = await NetInfo.fetch();
+            if (networkState.isConnected) {
+                console.log("connect")
+                // Envia os dados diretamente ao servidor
+                await fetchDriver(driverData);
+                console.log('Dados enviados ao servidor:', driverData);
+            } else {
+                // Salva localmente se não houver conexão
+                console.log("not connect")
+                await saveDataLocally(driverData);
+                console.log('Dados salvos localmente (sem internet).');
+            }
+            navigation.navigate('StartRoute');
+        } catch (error) {
+            console.error('Erro ao processar motorista:', error);
+        }
     };
 
     return (
@@ -58,7 +118,7 @@ export default function DestinationPoint({ navigation }: Props) {
                     data={setores}
                     onSelect={(setor) => {
                         setSelectedSetor(setor);
-                        setErrorMessage(null); // Remove erro ao selecionar
+                        setErrorMessage(null);
                     }}
                     renderButton={(selectedItem) => (
                         <View style={styles.dropdownButtonStyle}>

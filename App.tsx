@@ -33,7 +33,7 @@ function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="StartRoute">
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen
           name="Home"
           component={HomeScreen}
@@ -42,7 +42,7 @@ function App() {
         <Stack.Screen
           name="DestinationPoint"
           component={DestinationPointScreen}
-          options={{ title: 'Puesto de Descarga' }}
+          options={{ headerShown: false }}
         />
          <Stack.Screen
           name="Scanner"

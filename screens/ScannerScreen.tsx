@@ -18,7 +18,6 @@ type Props = {
 };
 
 export default function ScannerScreen({ navigation }: Props) {
-  const [readingCount, setReadingCount] = useState(0);
 
   // Função para solicitar permissões de localização no Android
   async function requestLocationPermission() {
@@ -89,7 +88,7 @@ export default function ScannerScreen({ navigation }: Props) {
             onPress: () => {
               setTimeout(() => {
                 navigation.navigate('StartRoute');
-              }, 2000);
+              }, 1000);
             },
           },
         ]);

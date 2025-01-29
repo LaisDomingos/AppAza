@@ -1,5 +1,5 @@
 export const fetchTrucks = async () => {
-    const apiUrl = "https://apim-aza-dev.azure-api.net//radioactive_portal/truck";
+    const apiUrl = "https://apim-aza-dev.azure-api.net/radioactive_portal/truck";
     try {
         const response = await fetch(apiUrl, {
             method: "GET",
