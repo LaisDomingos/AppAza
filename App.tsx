@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { NetInfoProvider } from './contexts/NetInfoContext.tsx';  // Importando o provider
 
 import HomeScreen from './screens/HomeScreen'; // Tela inicial
 import LoadingScreen from './screens/LoadingScreen'; // Tela de carregamento
@@ -15,6 +16,7 @@ export type RootStackParamList = {
   DestinationPoint: undefined; // A tela "DestinationPoint" não aceita parâmetros
   Scanner: undefined;
 };
+
 function App() {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -32,30 +34,33 @@ function App() {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="DestinationPoint"
-          component={DestinationPointScreen}
-          options={{ headerShown: false }}
-        />
-         <Stack.Screen
-          name="Scanner"
-          component={ScannerScreen}
-          options={{ title: 'Scanner' }}
-        />
-        <Stack.Screen
-          name="StartRoute"
-          component={StartRouteSreen}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    // Envolvendo a navegação com o NetInfoProvider
+    <NetInfoProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Home">
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="DestinationPoint"
+            component={DestinationPointScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Scanner"
+            component={ScannerScreen}
+            options={{ title: 'Scanner' }}
+          />
+          <Stack.Screen
+            name="StartRoute"
+            component={StartRouteSreen}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </NetInfoProvider>
   );
 }
 

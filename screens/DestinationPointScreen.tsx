@@ -36,9 +36,21 @@ export default function DestinationPoint({ navigation, route }: Props) {
             }
         };
 
-        // Tenta enviar os dados armazenados localmente quando o componente é montado
-        sendSavedData();
         loadJsonData();
+
+        // Monitorando a conectividade
+        const unsubscribe = NetInfo.addEventListener(state => {
+            if (state.isConnected) {
+                sendSavedData(); // Tenta enviar dados quando a conexão for restaurada
+            }
+        });
+
+        // Verifica se há dados salvos quando o componente monta
+        sendSavedData();
+
+        return () => {
+            unsubscribe(); // Limpa o ouvinte ao desmontar o componente
+        };
     }, []);
 
     const saveDataLocally = async (data: object) => {
@@ -61,14 +73,14 @@ export default function DestinationPoint({ navigation, route }: Props) {
             const parsedData = JSON.parse(savedData);
             for (const item of parsedData) {
                 try {
-                    await fetchDriver(item);
+                    await fetchDriver(item); // Envia os dados para o servidor
                     console.log('Dados enviados com sucesso:', item);
                 } catch (error) {
                     console.error('Erro ao enviar dados:', error);
-                    return; // Para tentar novamente no próximo ciclo
+                    return; // Tenta novamente no próximo ciclo
                 }
             }
-            await AsyncStorage.removeItem('@pending_data');
+            await AsyncStorage.removeItem('@pending_data'); // Limpa os dados enviados
         } catch (error) {
             console.error('Erro ao enviar dados salvos:', error);
         }
@@ -92,13 +104,13 @@ export default function DestinationPoint({ navigation, route }: Props) {
         try {
             const networkState = await NetInfo.fetch();
             if (networkState.isConnected) {
-                console.log("connect")
+                console.log("Conectado")
                 // Envia os dados diretamente ao servidor
                 await fetchDriver(driverData);
                 console.log('Dados enviados ao servidor:', driverData);
             } else {
-                // Salva localmente se não houver conexão
-                console.log("not connect")
+                console.log("Sem conexão")
+                // Salva os dados localmente quando sem conexão
                 await saveDataLocally(driverData);
                 console.log('Dados salvos localmente (sem internet).');
             }
@@ -111,7 +123,6 @@ export default function DestinationPoint({ navigation, route }: Props) {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Image source={require('../assets/logo.png')} style={styles.logo} />
-
             <View style={styles.inputContainer}>
                 <Text style={styles.label}>Puesto de Descarga:</Text>
                 <SelectDropdown
@@ -141,9 +152,7 @@ export default function DestinationPoint({ navigation, route }: Props) {
                     dropdownStyle={styles.dropdownMenuStyle}
                 />
             </View>
-
             {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
-
             <TouchableOpacity style={styles.button} onPress={handleStart}>
                 <Text style={styles.buttonText}>Iniciar</Text>
             </TouchableOpacity>
