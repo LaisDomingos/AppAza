@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown'; // Importando o SelectDropdown
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 import { fetchDrivers } from '../services/get/driver'; // Importe a função que busca os motoristas
@@ -32,38 +33,57 @@ export default function HomeScreen({ navigation }: Props) {
 
   useEffect(() => {
     const loadData = async () => {
+      setLoading(true);
+  
       try {
+        // Primeiro, tentar carregar os dados salvos no dispositivo
+        const savedDrivers = await AsyncStorage.getItem('drivers');
+        const savedTrucks = await AsyncStorage.getItem('trucks');
+  
+        if (savedDrivers && savedTrucks) {
+          setMotoristas(JSON.parse(savedDrivers));
+          setPatentesFetch(JSON.parse(savedTrucks));
+        }
+  
+        // Depois, tentar buscar os dados mais atualizados da API
         const drivers = await fetchDrivers();
         const trucks = await fetchTrucks();
-
-        setMotoristas(drivers); // Armazena os motoristas
-        setPatentesFetch(trucks.map((truck: Truck) => truck.plate));// Extrai as placas (patentes) e armazena
+  
+        setMotoristas(drivers);
+        setPatentesFetch(trucks.map((truck: Truck) => truck.plate));
+  
+        // Salvar os novos dados localmente
+        await AsyncStorage.setItem('drivers', JSON.stringify(drivers));
+        await AsyncStorage.setItem('trucks', JSON.stringify(trucks.map((truck: Truck) => truck.plate)));
       } catch (error) {
-        console.error('Erro ao buscar dados:', error);
-        setErro('Falha ao carregar os dados.');
+        console.error('Erro ao buscar dados da API:', error);
+  
+        if (!motoristas.length || !patentesfetch.length) {
+          setErro('Error al cargar los datos.');
+        }
       } finally {
-        setLoading(false); // Finaliza o carregamento
+        setLoading(false);
       }
     };
-
+  
     loadData();
-  }, []); // O array vazio significa que isso será chamado uma vez, quando o componente for montado
-
+  }, []);
+  
   const handleLogin = () => {
     if (!nome || !rut || !patente) {
-      setErro('Por favor, preencha todos os campos obrigatórios.');
+      setErro('Por favor, complete todos los campos obligatorios.');
       return;
     }
 
     const motoristaSelecionado = motoristas.find(driver => driver.name === nome);
 
     if (!motoristaSelecionado) {
-      setErro('Motorista não encontrado.');
+      setErro('Conductor no encontrado.');
       return;
     }
 
     if (motoristaSelecionado.rutNumber !== rut) {
-      setErro('RUT incorreto para o motorista selecionado.');
+      setErro('RUT incorrecto para el conductor seleccionado.');
       return;
     }
 
@@ -82,7 +102,7 @@ export default function HomeScreen({ navigation }: Props) {
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Nombre:</Text>
         {loading ? (
-          <Text>Carregando motoristas...</Text>
+          <Text>Cargando conductores...</Text>
         ) : (
           <SelectDropdown
             data={motoristas.map(driver => driver.name)}
@@ -90,7 +110,7 @@ export default function HomeScreen({ navigation }: Props) {
             renderButton={(selectedItem) => (
               <View style={styles.dropdownButtonStyle}>
                 <Text style={styles.dropdownButtonTxtStyle}>
-                  {selectedItem || 'Selecione seu nome'}
+                  {selectedItem || 'Seleccione su nombre'}
                 </Text>
               </View>
             )}
@@ -110,7 +130,7 @@ export default function HomeScreen({ navigation }: Props) {
           style={styles.input}
           onChangeText={setRut}
           value={rut}
-          placeholder="Digite seu RUT"
+          placeholder="Digite su RUT"
           keyboardType="numeric"
         />
       </View>
@@ -118,7 +138,7 @@ export default function HomeScreen({ navigation }: Props) {
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Patente:</Text>
         {loading ? (
-          <Text>Carregando patentes...</Text>
+          <Text>Cargando patentes...</Text>
         ) : (
           <SelectDropdown
             data={patentesfetch} // Usando as patentes buscadas
@@ -126,7 +146,7 @@ export default function HomeScreen({ navigation }: Props) {
             renderButton={(selectedItem) => (
               <View style={styles.dropdownButtonStyle}>
                 <Text style={styles.dropdownButtonTxtStyle}>
-                  {selectedItem || 'Selecione sua patente'}
+                  {selectedItem || 'Seleccione su patente'}
                 </Text>
               </View>
             )}

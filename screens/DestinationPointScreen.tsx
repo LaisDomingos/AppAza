@@ -76,7 +76,7 @@ export default function DestinationPoint({ navigation, route }: Props) {
 
     const handleStart = async () => {
         if (!selectedSetor) {
-            setErrorMessage('Por favor, selecione um setor.');
+            setErrorMessage('Por favor, seleccione un sector.');
             return;
         }
 
@@ -123,7 +123,7 @@ export default function DestinationPoint({ navigation, route }: Props) {
                     renderButton={(selectedItem) => (
                         <View style={styles.dropdownButtonStyle}>
                             <Text style={styles.dropdownButtonTxtStyle}>
-                                {selectedItem || 'Selecione um setor'}
+                                {selectedItem || 'Seleccione un sector'}
                             </Text>
                         </View>
                     )}

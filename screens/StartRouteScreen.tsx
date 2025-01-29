@@ -30,7 +30,7 @@ export default function StartRouteScreen({ navigation }: Props) {
   return (
      <View style={styles.container}>
       <Image source={require('../assets/logo.png')} style={styles.logo} />
-      <Text style={styles.title}>Início do Trajeto</Text>
+      <Text style={styles.title}>Inicio del trayecto</Text>
 
       <View style={styles.progressContainer}> 
         <View style={[styles.progressBar, { width: '50%' }]} /> 
@@ -42,7 +42,7 @@ export default function StartRouteScreen({ navigation }: Props) {
             source={require('../assets/location.png')}
             style={styles.locationIcon}
           />
-          <Text style={styles.pointText}>Início</Text>
+          <Text style={styles.pointText}>Inicio</Text>
         </View>
 
         <View style={styles.point}>
@@ -57,12 +57,12 @@ export default function StartRouteScreen({ navigation }: Props) {
             source={require('../assets/location.png')}
             style={styles.locationIcon}
           />
-          <Text style={styles.pointText}>Fim</Text>
+          <Text style={styles.pointText}>Fin</Text>
         </View>
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleStartRoute}>
-        <Text style={styles.buttonText}>Scanner</Text> 
+        <Text style={styles.buttonText}>Escáner</Text> 
       </TouchableOpacity>
 
 

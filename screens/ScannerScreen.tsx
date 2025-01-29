@@ -26,11 +26,12 @@ export default function ScannerScreen({ navigation }: Props) {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
-            title: 'Permissão de Localização',
-            message: 'Este aplicativo precisa acessar sua localização.',
-            buttonNeutral: 'Perguntar depois',
+            title: 'Permiso de ubicación',
+            message: 'Esta aplicación necesita acceder a su ubicación.',
+            buttonNeutral: 'Preguntar después',
             buttonNegative: 'Cancelar',
             buttonPositive: 'OK',
+
           }
         );
         return granted === PermissionsAndroid.RESULTS.GRANTED;
@@ -39,14 +40,14 @@ export default function ScannerScreen({ navigation }: Props) {
         return false;
       }
     }
-    return true; // iOS gerencia permissões automaticamente
+    return true;
   }
 
   // Função principal para obter a localização e escanear a tag NFC
   async function getLocationAndScan() {
     const hasPermission = await requestLocationPermission();
     if (!hasPermission) {
-      Alert.alert('Erro', 'Permissão de localização não concedida.');
+      Alert.alert('Erro', 'Permiso de ubicación no concedido.');
       return;
     }
 
@@ -60,7 +61,7 @@ export default function ScannerScreen({ navigation }: Props) {
       },
       error => {
         console.warn('Erro ao obter localização:', error);
-        Alert.alert('Erro', 'Não foi possível obter a localização.');
+        Alert.alert('Erro', 'No se pudo obtener la ubicación.');
       },
       {
         enableHighAccuracy: true,
@@ -82,7 +83,7 @@ export default function ScannerScreen({ navigation }: Props) {
 
       if (tag?.id) {
         const cardNumber = tag.id;
-        Alert.alert('Cartão Lido', `Número do cartão (RFID): ${cardNumber}`, [
+        Alert.alert('Tarjeta leída', `Número de la tarjeta (RFID): ${cardNumber}`, [
           {
             text: 'OK',
             onPress: () => {
@@ -93,11 +94,11 @@ export default function ScannerScreen({ navigation }: Props) {
           },
         ]);
       } else {
-        Alert.alert('Erro', 'Não foi possível encontrar o número do cartão.');
+        Alert.alert('Erro', 'No se pudo encontrar el número de la tarjeta..');
       }
     } catch (ex) {
       console.warn('Erro ao ler a tag:', ex);
-      Alert.alert('Erro', 'Ocorreu um erro ao tentar ler a tag NFC.');
+      Alert.alert('Erro', 'Ocurrió un error al intentar leer la etiqueta NFC.');
     }
   }
 
@@ -110,10 +111,10 @@ export default function ScannerScreen({ navigation }: Props) {
         />
       </View>
 
-      <Text style={styles.title}>NFC Scanner</Text>
+      <Text style={styles.title}>Escáner NFC</Text>
 
       <TouchableOpacity style={styles.button} onPress={getLocationAndScan}>
-        <Text style={styles.buttonText}>Scan a Tag</Text>
+        <Text style={styles.buttonText}>Escanear la etiqueta</Text>
       </TouchableOpacity>
     </View>
   );
