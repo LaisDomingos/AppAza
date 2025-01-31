@@ -9,7 +9,7 @@ import { fetchTrucks } from '../services/get/truck'; // Importando a função qu
 
 export type RootStackParamList = {
   Home: undefined; // Home não recebe parâmetros
-  DestinationPoint: { nome_driver: string; patente: string }; 
+  DestinationPoint: { nome_driver: string; patente: string; rut_driver: string }; 
 };
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
@@ -92,6 +92,7 @@ export default function HomeScreen({ navigation }: Props) {
     navigation.navigate('DestinationPoint', {
       nome_driver: nome,
       patente: patente,
+      rut_driver: rut
     });
   };
 
