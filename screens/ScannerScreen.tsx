@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, Platform } from 'react-native';
-import NfcManager from 'react-native-nfc-manager';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import Geolocation from 'react-native-geolocation-service';
 import { PermissionsAndroid } from 'react-native'; // Para permissões no Android
-
+import { fetchTruckByTag } from '../services/get/tag'; // Importe a função que você criou para buscar a tag específica
+import { StackNavigationProp } from '@react-navigation/stack';
 export type RootStackParamList = {
   Scanner: undefined;
   StartRoute: undefined;
@@ -16,6 +14,14 @@ type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'StartRo
 type Props = {
   navigation: HomeScreenNavigationProp;
 };
+
+const tags = [
+  '2fnoou7igp2gh7h3',
+  'xg8yuklldnx7ez6f',
+  'fyau3gdxxsos9h3m',
+  '2gyvmjgbb4g1u5nl',
+  'wxkzfyq5blznmkcn',
+];
 
 export default function ScannerScreen({ navigation }: Props) {
 
@@ -31,7 +37,6 @@ export default function ScannerScreen({ navigation }: Props) {
             buttonNeutral: 'Preguntar después',
             buttonNegative: 'Cancelar',
             buttonPositive: 'OK',
-
           }
         );
         return granted === PermissionsAndroid.RESULTS.GRANTED;
@@ -74,16 +79,16 @@ export default function ScannerScreen({ navigation }: Props) {
   // Função de leitura da tag NFC
   async function readNdef() {
     try {
-      // Simula a leitura da tag com um ID falso
-      const tag = {
-        id: '1234567890abcdef', // ID falso da tag
-      };
+      // Seleciona aleatoriamente uma tag
+      const randomTag = tags[Math.floor(Math.random() * tags.length)];
 
-      console.warn('Tag completa:', tag);
+      console.warn('Tag selecionada:', randomTag);
 
-      if (tag?.id) {
-        const cardNumber = tag.id;
-        Alert.alert('Tarjeta leída', `Número de la tarjeta (RFID): ${cardNumber}`, [
+      // Chama a função para buscar a tag
+      const tagData = await fetchTruckByTag(randomTag);
+      console.log(tagData)
+      if (tagData?.material) {
+        Alert.alert('Material da Tag', `Material: ${tagData.material}`, [
           {
             text: 'OK',
             onPress: () => {
@@ -94,7 +99,7 @@ export default function ScannerScreen({ navigation }: Props) {
           },
         ]);
       } else {
-        Alert.alert('Erro', 'No se pudo encontrar el número de la tarjeta..');
+        Alert.alert('Erro', 'Não foi possível encontrar o material para essa tag.');
       }
     } catch (ex) {
       console.warn('Erro ao ler a tag:', ex);

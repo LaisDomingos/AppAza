@@ -9,8 +9,8 @@ import { fetchTrucks } from '../services/get/truck'; // Importando a função qu
 
 export type RootStackParamList = {
   Home: undefined; // Home não recebe parâmetros
-  DestinationPoint: { nome_driver: string; patente: string; rut_driver: string }; 
-};
+  DestinationPoint: { nome_driver: string; patente: string; rut_driver: string; truck_brand: string}; 
+}; 
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -20,6 +20,7 @@ type Props = {
 
 type Truck = {
   plate: string; // Adicione outras propriedades, se existirem
+  brand: string;
 };
 
 export default function HomeScreen({ navigation }: Props) {
@@ -30,7 +31,9 @@ export default function HomeScreen({ navigation }: Props) {
   const [motoristas, setMotoristas] = useState<any[]>([]); // Estado para armazenar motoristas
   const [loading, setLoading] = useState<boolean>(true); // Estado para controlar o carregamento
   const [patentesfetch, setPatentesFetch] = useState<string[]>([]); // Estado para patentes buscadas
-
+  const [brands, setBrands] = useState<{ [key: string]: string }>({}); // Mapeamento patente -> marca
+  const [truckBrands, setTruckBrands] = useState<{ [key: string]: string }>({}); // Estado para armazenar mapeamento patente -> marca
+ 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -48,13 +51,23 @@ export default function HomeScreen({ navigation }: Props) {
         // Depois, tentar buscar os dados mais atualizados da API
         const drivers = await fetchDrivers();
         const trucks = await fetchTrucks();
-  
+        
+        const truckBrands = trucks.reduce((acc: { [key: string]: string }, truck: Truck) => {
+          acc[truck.plate] = truck.brand;
+          return acc;
+        }, {});
+
+        // Atualizar estado truckBrands
+        setTruckBrands(truckBrands);
+
+        setBrands(truckBrands);
         setMotoristas(drivers);
         setPatentesFetch(trucks.map((truck: Truck) => truck.plate));
-  
+        
         // Salvar os novos dados localmente
         await AsyncStorage.setItem('drivers', JSON.stringify(drivers));
         await AsyncStorage.setItem('trucks', JSON.stringify(trucks.map((truck: Truck) => truck.plate)));
+        await AsyncStorage.setItem('truck_brand', JSON.stringify(trucks.map((truck: Truck) => truck.brand)));
       } catch (error) {
         console.error('Erro ao buscar dados da API:', error);
   
@@ -74,28 +87,32 @@ export default function HomeScreen({ navigation }: Props) {
       setErro('Por favor, complete todos los campos obligatorios.');
       return;
     }
-
+  
     const motoristaSelecionado = motoristas.find(driver => driver.name === nome);
-
+  
     if (!motoristaSelecionado) {
       setErro('Conductor no encontrado.');
       return;
     }
-
+  
     if (motoristaSelecionado.rutNumber !== rut) {
       setErro('RUT incorrecto para el conductor seleccionado.');
       return;
     }
-
+  
+    // Obter a marca diretamente de truckBrands
+    const selectedTruckBrand = truckBrands[patente] || '';
+  
     setErro('');
     console.log('Login bem-sucedido', nome, rut, patente);
     navigation.navigate('DestinationPoint', {
       nome_driver: nome,
       patente: patente,
-      rut_driver: rut
+      rut_driver: rut,
+      truck_brand: selectedTruckBrand // Passa a marca diretamente
     });
   };
-
+  
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image source={require('../assets/logo.png')} style={styles.logo} />

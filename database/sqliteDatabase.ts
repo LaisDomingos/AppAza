@@ -23,7 +23,6 @@ const db: SQLiteDatabase = SQLite.openDatabase(
   }
 );
 
-
 // Função para criar a tabela, se não existir
 const createTable = (): void => {
   db.transaction((tx: Transaction) => {
@@ -42,8 +41,6 @@ const createTable = (): void => {
   });
 };
 
-
-
 // Função para inserir dados no SQLite
 const insertData = (driver_name: string, driver_rut: string, plate: string, destination_name: string): void => {
   db.transaction((tx: Transaction) => {
@@ -61,7 +58,6 @@ const insertData = (driver_name: string, driver_rut: string, plate: string, dest
     );
   });
 };
-
 
 // Função para buscar dados não enviados
 const getPendingData = (): Promise<TruckData[]> => {
@@ -84,18 +80,29 @@ const getPendingData = (): Promise<TruckData[]> => {
   });
 };
 
-
 // Função para marcar dados como enviados
-const markAsSent = (id: number): void => {
-  db.transaction((tx: Transaction) => {
-    tx.executeSql(
-      'UPDATE trucks SET sent = 1 WHERE id = ?',
-      [id],
-      () => console.log('Dados marcados como enviados!'),
-      (error: any) => console.log('Erro ao marcar dados como enviados: ', error)
-    );
+const markAsSent = async (id: number): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx: Transaction) => {
+      tx.executeSql(
+        'UPDATE trucks SET sent = 1 WHERE id = ?',
+        [id],
+        (_, result) => {
+          if (result.rowsAffected > 0) {
+            console.log(`Registro ${id} marcado como enviado no SQLite.`);
+            resolve();
+          } else {
+            console.warn(`Nenhum registro atualizado para ID: ${id}.`);
+          }
+        },
+        (error: any) => {
+          reject(error);
+        }
+      );
+    });
   });
 };
+
 
 // Função para excluir dados
 const deleteData = (id: number): void => {
@@ -123,4 +130,3 @@ const clearAllData = (): void => {
 
 // Exportando as funções para serem usadas em outros módulos
 export { getPendingData, insertData, markAsSent }; // Exportando as funções necessárias
-

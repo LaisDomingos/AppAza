@@ -31,11 +31,28 @@ interface DriverData {
 }
 
 export default function DestinationPoint({ navigation, route }: Props) {
-  const { nome_driver, patente, rut_driver } = route.params;
+  const { nome_driver, patente, rut_driver, truck_brand } = route.params;
+  console.log("brand recebida: ", route.params)
   const [selectedSetor, setSelectedSetor] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [setores, setSetores] = useState<string[]>([]);
 
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      if (state.isConnected) {
+        console.log('Conexão restaurada! Tentando enviar dados pendentes...');
+        sendSavedData();
+      }
+    });
+  
+    // Verifica se há dados salvos quando o componente monta
+    sendSavedData();
+  
+    return () => {
+      unsubscribe(); // Remove o listener quando o componente desmonta
+    };
+  }, []);
+  
   useEffect(() => {
     const loadJsonData = async () => {
       try {
@@ -74,42 +91,48 @@ export default function DestinationPoint({ navigation, route }: Props) {
     }
   };
 
+  let isSyncing = false; // Variável global para evitar múltiplas execuções
+
   const sendSavedData = async () => {
-  try {
-    const networkState = await NetInfo.fetch();
-    if (!networkState.isConnected) {
-      console.log("Sem conexão, aguardando para enviar os dados...");
-      return; // Não envia se não houver conexão
-    }
-
-    // Recupera dados salvos no SQLite
-    const pendingData = await getPendingData(); // Aqui você pega os dados da sua tabela no SQLite
-
-    if (pendingData.length === 0) {
-      console.log('Nenhum dado pendente para enviar.'); // Alterado para um log em vez de erro
+    if (isSyncing) {
+      console.log('🔄 Sincronização já em andamento, evitando chamadas duplicadas.');
       return;
     }
-
-    // Usar um loop para enviar os dados e marcar como enviados
-    for (const item of pendingData) {
-      try {
-        if (!item.sent && item.id !== undefined) { // Verifica se o id está definido e se o item não foi enviado
-          // Envia os dados
-          await fetchDriver(item);
-          console.log('Dados enviados com sucesso:', item);
-
-          // Marcar o item como enviado no SQLite
-          await markAsSent(item.id);
-          console.log('Dados marcados como enviados no SQLite');
-        }
-      } catch (error) {
-        console.error('Erro ao enviar dados:', error);
+  
+    isSyncing = true; // Bloqueia chamadas simultâneas
+  
+    try {
+      const networkState = await NetInfo.fetch();
+      if (!networkState.isConnected) {
+        console.log('📴 Sem conexão, aguardando para enviar os dados...');
+        isSyncing = false;
+        return; // Para a execução se não há internet
       }
+  
+      const pendingData = await getPendingData();
+      if (pendingData.length === 0) {
+        console.log('✅ Nenhum dado pendente para enviar.');
+        isSyncing = false;
+        return;
+      }
+  
+      for (const item of pendingData) {
+        try {
+          if (!item.sent && item.id !== undefined) {
+            await fetchDriver(item); // Envia para a API
+            console.log('📡 Dados enviados com sucesso:', item);
+  
+            await markAsSent(item.id); // Marca como enviado
+          }
+        } catch (error) {
+          console.error('❌ Erro ao enviar dados:', error);
+        }
+      }
+    } finally {
+      isSyncing = false; // Libera a execução para a próxima vez
     }
-  } catch (error) {
-    console.log(error);
-  }
-};  
+  };
+  
 
   const handleStart = async () => {
     if (!selectedSetor) {
