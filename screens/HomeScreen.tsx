@@ -6,10 +6,17 @@ import { StackNavigationProp } from '@react-navigation/stack';
 
 import { fetchDrivers } from '../services/get/driver'; // Importe a função que busca os motoristas
 import { fetchTrucks } from '../services/get/truck'; // Importando a função que busca os caminhões
+import { insertData } from '../database/sqliteDatabase';
 
 export type RootStackParamList = {
   Home: undefined; // Home não recebe parâmetros
-  DestinationPoint: { nome_driver: string; patente: string; rut_driver: string; truck_brand: string}; 
+  DestinationPoint: { 
+    nome_driver: string; 
+    patente: string; 
+    rut_driver: string; 
+    truck_brand: string; 
+    truck_id: number
+  }; 
 }; 
 
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
@@ -34,6 +41,20 @@ export default function HomeScreen({ navigation }: Props) {
   const [brands, setBrands] = useState<{ [key: string]: string }>({}); // Mapeamento patente -> marca
   const [truckBrands, setTruckBrands] = useState<{ [key: string]: string }>({}); // Estado para armazenar mapeamento patente -> marca
  
+  useEffect(() => {
+    //Zera o scanCount que esta no Async
+    const changeScanCount = async () => {
+      try{
+        const newCount = 0;
+    await AsyncStorage.setItem('scanCount', newCount.toString());
+      } catch (error) {
+        console.error('Erro ao buscar scanCount:', error);
+      }
+    }
+
+    changeScanCount();
+  }, []); // O array vazio garante que execute apenas uma vez
+  
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -82,7 +103,7 @@ export default function HomeScreen({ navigation }: Props) {
     loadData();
   }, []);
   
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!nome || !rut || !patente) {
       setErro('Por favor, complete todos los campos obligatorios.');
       return;
@@ -102,14 +123,24 @@ export default function HomeScreen({ navigation }: Props) {
   
     // Obter a marca diretamente de truckBrands
     const selectedTruckBrand = truckBrands[patente] || '';
-  
+    const id = await insertData(
+      "1111 - AZA Colina", 
+      "TRANSPORTES LMORA LTDA", 
+      "8000032", 
+      selectedTruckBrand, 
+      patente, 
+      nome, 
+      rut
+    );
+
     setErro('');
     console.log('Login bem-sucedido', nome, rut, patente);
     navigation.navigate('DestinationPoint', {
       nome_driver: nome,
       patente: patente,
       rut_driver: rut,
-      truck_brand: selectedTruckBrand // Passa a marca diretamente
+      truck_brand: selectedTruckBrand,
+      truck_id: id // Passa o ID do caminhão
     });
   };
   

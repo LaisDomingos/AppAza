@@ -23,11 +23,30 @@ const db: SQLiteDatabase = SQLite.openDatabase(
   }
 );
 
-// Função para criar a tabela, se não existir
 const createTable = (): void => {
   db.transaction((tx: Transaction) => {
     tx.executeSql(
-      'CREATE TABLE IF NOT EXISTS trucks (id INTEGER PRIMARY KEY AUTOINCREMENT, driver_name TEXT, driver_rut TEXT, plate TEXT, destination_name TEXT, created_at DATETIME, sent INTEGER)',
+      `CREATE TABLE IF NOT EXISTS trucks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        unidad TEXT,
+        supplier_name TEXT,
+        supplier_rut TEXT,
+        truck_brand TEXT,
+        plate TEXT,
+        radioactive_status INTEGER,
+        date_time DATETIME,
+        driver_rut TEXT,
+        driver_name TEXT,
+        material_destination_name TEXT,
+        material_destination_code TEXT,
+        version_name TEXT,
+        version_code TEXT,
+        material_origen_name TEXT,
+        material_origen_code TEXT,
+        destination_location_code TEXT,
+        destination_location_name TEXT,
+        sent INTEGER,
+      )`,
       [],
       () => {
         console.log('Tabela criada com sucesso!');
@@ -41,26 +60,85 @@ const createTable = (): void => {
   });
 };
 
-// Função para inserir dados no SQLite
-const insertData = (driver_name: string, driver_rut: string, plate: string, destination_name: string): void => {
+const insertData = (
+  unidad: string,
+  supplier_name: string,
+  supplier_rut: string,
+  truck_brand: string,
+  plate: string,
+  driver_rut: string,
+  driver_name: string
+): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx: Transaction) => {
+      const dateTime = new Date().toISOString();
+      tx.executeSql(
+        'INSERT INTO trucks (unidad, supplier_name, supplier_rut, truck_brand, plate, date_time, driver_rut, driver_name,sent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)',
+        [unidad, supplier_name, supplier_rut, truck_brand, plate, dateTime, driver_rut, driver_name],
+        (_, result) => {
+          // Retorna o insertId do resultado
+          resolve(result.insertId);
+        },
+        (error: any) => {
+          console.log('Erro ao inserir dados: ', error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+//Atualizar destination_location_code e destination_location_name
+const updateDestinationLocation = (id: number, code: string, name: string): void => {
   db.transaction((tx: Transaction) => {
-    const createdAt = new Date().toISOString();
     tx.executeSql(
-      'INSERT INTO trucks (driver_name, driver_rut, plate, destination_name, created_at, sent) VALUES (?, ?, ?, ?, ?, ?)',
-      [driver_name, driver_rut, plate, destination_name, createdAt, 0], // 0 indica que o dado ainda não foi enviado
-      () => {
-        console.log('Dados inseridos com sucesso!');
-      },
-      (error: any) => {
-        console.log('Erro ao inserir dados: ', error);
-        // Tratar o erro aqui se necessário
-      }
+      'UPDATE trucks SET destination_location_code = ?, destination_location_name = ? WHERE id = ?',
+      [code, name, id],
+      () => console.log('Destino atualizado com sucesso!'),
+      (error: any) => console.log('Erro ao atualizar destino: ', error)
+    );
+  });
+};
+
+//Atualizar material_destination_name, material_destination_code, materialOrigenName, 
+// materialOrigenCode, versionName e versionCode
+const updateTruckDetails = (
+  id: number,
+  materialDestinationName: string,
+  materialDestinationCode: string,
+  materialOrigenName: string,
+  materialOrigenCode: string,
+  versionName: string,
+  versionCode: string
+): void => {
+  db.transaction((tx: Transaction) => {
+    tx.executeSql(
+      `UPDATE trucks 
+       SET material_destination_name = ?, material_destination_code = ?,
+           material_origen_name = ?, material_origen_code = ?,
+           version_name = ?, version_code = ? 
+       WHERE id = ?`,
+      [materialDestinationName, materialDestinationCode, materialOrigenName, materialOrigenCode, versionName, versionCode, id],
+      () => console.log('Dados atualizados com sucesso!'),
+      (error: any) => console.log('Erro ao atualizar dados: ', error)
+    );
+  });
+};
+
+//Altualizar Radioactive_status
+const updateRadioactiveStatus = (id: number, status: boolean): void => {
+  db.transaction((tx: Transaction) => {
+    tx.executeSql(
+      'UPDATE trucks SET radioactive_status = ? WHERE id = ?',
+      [status ? 1 : 0, id],
+      () => console.log('Status radioativo atualizado com sucesso!'),
+      (error: any) => console.log('Erro ao atualizar status radioativo: ', error)
     );
   });
 };
 
 // Função para buscar dados não enviados
-const getPendingData = (): Promise<TruckData[]> => {
+function getPendingData(): Promise<TruckData[]> {
   return new Promise((resolve, reject) => {
     db.transaction((tx: Transaction) => {
       tx.executeSql(
@@ -78,7 +156,7 @@ const getPendingData = (): Promise<TruckData[]> => {
       );
     });
   });
-};
+}
 
 // Função para marcar dados como enviados
 const markAsSent = async (id: number): Promise<void> => {
@@ -129,4 +207,4 @@ const clearAllData = (): void => {
 };
 
 // Exportando as funções para serem usadas em outros módulos
-export { getPendingData, insertData, markAsSent }; // Exportando as funções necessárias
+export { getPendingData, insertData, markAsSent, updateDestinationLocation, updateTruckDetails, updateRadioactiveStatus }; // Exportando as funções necessárias

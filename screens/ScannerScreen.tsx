@@ -1,18 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, Platform } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import { PermissionsAndroid } from 'react-native'; // Para permissões no Android
-import { fetchTruckByTag } from '../services/get/tag'; // Importe a função que você criou para buscar a tag específica
+import { PermissionsAndroid } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { fetchTruckByTag } from '../services/get/tag';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { updateRadioactiveStatus, updateTruckDetails } from '../database/sqliteDatabase';
+
 export type RootStackParamList = {
   Scanner: undefined;
-  StartRoute: undefined;
+  StartRoute: { truck_id: number };
 };
 
-type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'StartRoute'>;
+type ScannerScreenNavigationProp = StackNavigationProp<RootStackParamList, 'StartRoute'>;
 
 type Props = {
-  navigation: HomeScreenNavigationProp;
+  navigation: ScannerScreenNavigationProp;
+  route: any;
 };
 
 const tags = [
@@ -21,11 +25,25 @@ const tags = [
   'fyau3gdxxsos9h3m',
   '2gyvmjgbb4g1u5nl',
   'wxkzfyq5blznmkcn',
+  'nekqafsjasvq5r0s'
 ];
 
-export default function ScannerScreen({ navigation }: Props) {
+export default function ScannerScreen({ navigation, route }: Props) {
+  const { truck_id } = route.params;
+  const [scanCount, setScanCount] = useState(0);
 
-  // Função para solicitar permissões de localização no Android
+  // Carrega o contador salvo ao iniciar
+  useEffect(() => {
+    const loadScanCount = async () => {
+      const savedCount = await AsyncStorage.getItem('scanCount');
+      if (savedCount) {
+        setScanCount(parseInt(savedCount, 10));
+      }
+    };
+    loadScanCount();
+  }, []);
+
+  //Permissão para a pegar a localização
   async function requestLocationPermission() {
     if (Platform.OS === 'android') {
       try {
@@ -48,7 +66,7 @@ export default function ScannerScreen({ navigation }: Props) {
     return true;
   }
 
-  // Função principal para obter a localização e escanear a tag NFC
+  //Pega a localização
   async function getLocationAndScan() {
     const hasPermission = await requestLocationPermission();
     if (!hasPermission) {
@@ -60,8 +78,6 @@ export default function ScannerScreen({ navigation }: Props) {
       position => {
         const { latitude, longitude } = position.coords;
         console.log('Localização capturada: ', { latitude, longitude });
-
-        // Após capturar a localização, execute o scanner
         readNdef();
       },
       error => {
@@ -76,36 +92,61 @@ export default function ScannerScreen({ navigation }: Props) {
     );
   }
 
-  // Função de leitura da tag NFC
+  //Faz a leitura "falsa" do NFC
   async function readNdef() {
     try {
-      // Seleciona aleatoriamente uma tag
-      const randomTag = tags[Math.floor(Math.random() * tags.length)];
-
-      console.warn('Tag selecionada:', randomTag);
-
-      // Chama a função para buscar a tag
-      const tagData = await fetchTruckByTag(randomTag);
-      console.log(tagData)
-      if (tagData?.material) {
-        Alert.alert('Material da Tag', `Material: ${tagData.material}`, [
+      const newCount = scanCount + 1;
+      setScanCount(newCount);
+      await AsyncStorage.setItem('scanCount', newCount.toString());
+  
+      if (newCount === 1) {
+        // Primeiro scan: busca material
+        const randomTag = tags[Math.floor(Math.random() * tags.length)];
+        
+        const tagData = await fetchTruckByTag(randomTag);
+        updateTruckDetails(
+          truck_id, 
+          tagData.description, 
+          tagData.code, 
+          "", 
+          "", 
+          tagData.process[0].description, 
+          tagData.process[0].code 
+        )
+        if (tagData?.description) {
+          Alert.alert('Material', `Material: ${tagData.description}`, [
+            {
+              text: 'OK',
+              onPress: () => {
+                setTimeout(() => {
+                  navigation.navigate('StartRoute', { truck_id });
+                }, 1000);
+              },
+            },
+          ]);
+        } else {
+          Alert.alert('Erro', 'Não foi possível encontrar o material para essa tag.');
+        }
+      } else if (newCount === 2) {
+        updateRadioactiveStatus(truck_id, true)
+        // Segundo scan: mostra alerta "Portal radioativo true"
+        Alert.alert('Portal radiactivo', `El conductor pasó por el portal radiactivo.`, [
           {
             text: 'OK',
             onPress: () => {
               setTimeout(() => {
-                navigation.navigate('StartRoute');
+                navigation.navigate('StartRoute', { truck_id });
               }, 1000);
             },
           },
         ]);
-      } else {
-        Alert.alert('Erro', 'Não foi possível encontrar o material para essa tag.');
       }
     } catch (ex) {
       console.warn('Erro ao ler a tag:', ex);
-      Alert.alert('Erro', 'Ocurrió un error al intentar leer la etiqueta NFC.');
+      Alert.alert('Erro', 'Ocorrió un error al intentar leer la etiqueta NFC.');
     }
   }
+  
 
   return (
     <View style={styles.wrapper}>
@@ -146,6 +187,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
+    marginBottom: 10,
+  },
+  scanCount: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#666',
     marginBottom: 20,
   },
   button: {

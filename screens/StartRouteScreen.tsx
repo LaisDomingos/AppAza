@@ -9,21 +9,25 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 
 export type RootStackParamList = {
-  Scanner: undefined;
   StartRoute: undefined;
+  Scanner:  { truck_id: number }; 
 };
 
-type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'StartRoute'>;
+type StartRouteScreenNavigationProp = StackNavigationProp<RootStackParamList, 'StartRoute'>;
 
 type Props = {
-  navigation: HomeScreenNavigationProp;
+  navigation: StartRouteScreenNavigationProp;
+  route: any;
 };
 
-export default function StartRouteScreen({ navigation }: Props) {
+export default function StartRouteScreen({ navigation, route }: Props) {
+  const {truck_id } = route.params
   const [isFinished, setIsFinished] = useState(false);
 
   const handleStartRoute = () => {
-    navigation.navigate('Scanner');
+    navigation.navigate('Scanner', {
+      truck_id: truck_id
+    });
     setIsFinished(true); // Quando o botão for pressionado, marca como "finalizado"
   };
 
