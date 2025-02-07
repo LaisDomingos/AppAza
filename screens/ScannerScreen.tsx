@@ -5,7 +5,7 @@ import { PermissionsAndroid } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchTruckByTag } from '../services/get/tag';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { updateRadioactiveStatus, updateTruckDetails, getPendingData } from '../database/sqliteDatabase';
+import { updateRadioactiveStatus, updateTruckDetails, getPendingData, markAsSent } from '../database/sqliteDatabase';
 import fetchDriver from '../services/post/driver_truck';
 
 export type RootStackParamList = {
@@ -154,6 +154,8 @@ export default function ScannerScreen({ navigation, route }: Props) {
               destination_location_name: truck.destination_location_name,
           }).then(response => {
               console.log("Motorista criado com sucesso:", response);
+                // Chama a função para marcar o caminhão como enviado
+              markAsSent(truck.id);
           }).catch(error => {
               console.error("Erro ao criar motorista:", error);
           });

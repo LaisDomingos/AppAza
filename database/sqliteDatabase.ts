@@ -2,6 +2,7 @@ import SQLite, { SQLiteDatabase, Transaction, ResultSet } from 'react-native-sql
 
 // Definir tipo para os dados
 type TruckData = {
+  id: number; // Adiciona o id
   unidad: string;
   supplier_name: string;
   supplier_rut: string;
