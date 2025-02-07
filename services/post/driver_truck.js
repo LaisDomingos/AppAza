@@ -1,8 +1,41 @@
 const fetch = require("node-fetch");
 
-const fetchDriver = async ({ driver_name, plate, destination_name }) => {
-    console.log("back:", driver_name, plate, destination_name)
-    if (!driver_name || !plate || !destination_name) {
+const fetchDriver = async ({
+    unidad,
+    supplier_name,
+    supplier_rut,
+    truck_brand,
+    plate,
+    radioactive_status,
+    date_time,
+    driver_rut,
+    driver_name,
+    material_destination_name,
+    material_destination_code,
+    version_name,
+    version_code,
+    material_origen_name,
+    material_origen_code,
+    destination_location_code,
+    destination_location_name,
+}) => {
+    if (
+        !unidad ||
+        !supplier_name ||
+        !supplier_rut ||
+        !truck_brand ||
+        !plate ||
+        !radioactive_status ||
+        !date_time ||
+        !driver_rut ||
+        !driver_name ||
+        !material_destination_name ||
+        !material_destination_code ||
+        !version_name ||
+        !version_code ||
+        !destination_location_code ||
+        !destination_location_name
+    ) {
         throw new Error("Todos os campos são obrigatórios");
     }
 
@@ -15,9 +48,23 @@ const fetchDriver = async ({ driver_name, plate, destination_name }) => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                driver_name,
+                unidad,
+                supplier_name,
+                supplier_rut,
+                truck_brand,
                 plate,
-                destination_name,
+                radioactive_status,
+                date_time,
+                driver_rut,
+                driver_name,
+                material_destination_name,
+                material_destination_code,
+                version_name,
+                version_code,
+                material_origen_name,
+                material_origen_code,
+                destination_location_code,
+                destination_location_name,
             }),
         });
 
@@ -32,6 +79,5 @@ const fetchDriver = async ({ driver_name, plate, destination_name }) => {
         throw new Error("Erro ao criar motorista.");
     }
 };
-
 
 module.exports = fetchDriver;

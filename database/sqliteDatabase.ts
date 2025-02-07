@@ -1,15 +1,26 @@
 import SQLite, { SQLiteDatabase, Transaction, ResultSet } from 'react-native-sqlite-storage';
 
 // Definir tipo para os dados
-interface TruckData {
-  id: number;
-  driver_name: string;
-  driver_rut: string;
+type TruckData = {
+  unidad: string;
+  supplier_name: string;
+  supplier_rut: string;
+  truck_brand: string;
   plate: string;
-  destination_name: string;
-  created_at: string;
-  sent: number;
-}
+  radioactive_status: number;
+  date_time: string;
+  driver_rut: string;
+  driver_name: string;
+  material_destination_name: string;
+  material_destination_code: string;
+  version_name: string;
+  version_code: string;
+  material_origen_name: string;
+  material_origen_code: string;
+  destination_location_code: string;
+  destination_location_name: string;
+};
+
 
 // Abre o banco de dados SQLite
 const db: SQLiteDatabase = SQLite.openDatabase(
@@ -45,12 +56,11 @@ const createTable = (): void => {
         material_origen_code TEXT,
         destination_location_code TEXT,
         destination_location_name TEXT,
-        sent INTEGER,
-      )`,
+        sent INTEGER
+      )`, // Removida a vírgula depois de "sent INTEGER"
       [],
       () => {
         console.log('Tabela criada com sucesso!');
-        // Verificando se a tabela foi criada com sucesso
         tx.executeSql('SELECT * FROM trucks', [], (_, results) => {
           console.log('Tabela trucks contém os seguintes dados:', results.rows.raw());
         });
@@ -207,4 +217,4 @@ const clearAllData = (): void => {
 };
 
 // Exportando as funções para serem usadas em outros módulos
-export { getPendingData, insertData, markAsSent, updateDestinationLocation, updateTruckDetails, updateRadioactiveStatus }; // Exportando as funções necessárias
+export { clearAllData, createTable, getPendingData, insertData, markAsSent, updateDestinationLocation, updateTruckDetails, updateRadioactiveStatus }; // Exportando as funções necessárias

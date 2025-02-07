@@ -5,7 +5,8 @@ import { PermissionsAndroid } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchTruckByTag } from '../services/get/tag';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { updateRadioactiveStatus, updateTruckDetails } from '../database/sqliteDatabase';
+import { updateRadioactiveStatus, updateTruckDetails, getPendingData } from '../database/sqliteDatabase';
+import fetchDriver from '../services/post/driver_truck';
 
 export type RootStackParamList = {
   Scanner: undefined;
@@ -34,6 +35,7 @@ export default function ScannerScreen({ navigation, route }: Props) {
 
   // Carrega o contador salvo ao iniciar
   useEffect(() => {
+    
     const loadScanCount = async () => {
       const savedCount = await AsyncStorage.getItem('scanCount');
       if (savedCount) {
@@ -120,7 +122,7 @@ export default function ScannerScreen({ navigation, route }: Props) {
               onPress: () => {
                 setTimeout(() => {
                   navigation.navigate('StartRoute', { truck_id });
-                }, 1000);
+                }, 500);
               },
             },
           ]);
@@ -129,6 +131,33 @@ export default function ScannerScreen({ navigation, route }: Props) {
         }
       } else if (newCount === 2) {
         updateRadioactiveStatus(truck_id, true)
+        const trucks = await getPendingData();
+        
+        for (const truck of trucks) {
+          await fetchDriver({
+              unidad: truck.unidad,
+              supplier_name: truck.supplier_name,
+              supplier_rut: truck.supplier_rut,
+              truck_brand: truck.truck_brand,
+              plate: truck.plate,
+              radioactive_status: truck.radioactive_status,
+              date_time: truck.date_time,
+              driver_rut: truck.driver_rut,
+              driver_name: truck.driver_name,
+              material_destination_name: truck.material_destination_name,
+              material_destination_code: truck.material_destination_code,
+              version_name: truck.version_name,
+              version_code: truck.version_code,
+              material_origen_name: truck.material_origen_name,
+              material_origen_code: truck.material_origen_code,
+              destination_location_code: truck.destination_location_code,
+              destination_location_name: truck.destination_location_name,
+          }).then(response => {
+              console.log("Motorista criado com sucesso:", response);
+          }).catch(error => {
+              console.error("Erro ao criar motorista:", error);
+          });
+      }
         // Segundo scan: mostra alerta "Portal radioativo true"
         Alert.alert('Portal radiactivo', `El conductor pasó por el portal radiactivo.`, [
           {
@@ -136,7 +165,7 @@ export default function ScannerScreen({ navigation, route }: Props) {
             onPress: () => {
               setTimeout(() => {
                 navigation.navigate('StartRoute', { truck_id });
-              }, 1000);
+              }, 500);
             },
           },
         ]);
@@ -147,7 +176,6 @@ export default function ScannerScreen({ navigation, route }: Props) {
     }
   }
   
-
   return (
     <View style={styles.wrapper}>
       <View style={styles.iconContainer}>
