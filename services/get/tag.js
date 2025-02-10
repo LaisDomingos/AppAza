@@ -1,6 +1,5 @@
 export const fetchTruckByTag = async (tagId) => {
     const apiUrl = `http://172.20.10.2:3000/api/tags/${tagId}`; // URL atualizada para incluir a tag específica
-    console.log("fetch: ", tagId)
     try {
         const response = await fetch(apiUrl, {
             method: "GET",

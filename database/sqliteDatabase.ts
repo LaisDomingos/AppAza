@@ -1,7 +1,7 @@
 import SQLite, { SQLiteDatabase, Transaction, ResultSet } from 'react-native-sqlite-storage';
 
 // Definir tipo para os dados
-type TruckData = {
+export type TruckData = {
   id: number; // Adiciona o id
   unidad: string;
   supplier_name: string;
@@ -20,6 +20,7 @@ type TruckData = {
   material_origen_code: string;
   destination_location_code: string;
   destination_location_name: string;
+  sent: number;
 };
 
 
@@ -192,6 +193,28 @@ const markAsSent = async (id: number): Promise<void> => {
   });
 };
 
+const markAsPending = async (id: number): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx: Transaction) => {
+      tx.executeSql(
+        'UPDATE trucks SET sent = 0 WHERE id = ?',
+        [id],
+        (_, result) => {
+          if (result.rowsAffected > 0) {
+            console.log(`Registro ${id} marcado como pendente no SQLite.`);
+            resolve();
+          } else {
+            console.warn(`Nenhum registro atualizado para ID: ${id}.`);
+          }
+        },
+        (error: any) => {
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
 
 // Função para excluir dados
 const deleteData = (id: number): void => {
@@ -218,4 +241,15 @@ const clearAllData = (): void => {
 };
 
 // Exportando as funções para serem usadas em outros módulos
-export { clearAllData, createTable, getPendingData, insertData, markAsSent, updateDestinationLocation, updateTruckDetails, updateRadioactiveStatus }; // Exportando as funções necessárias
+export { 
+  
+  clearAllData, 
+  createTable, 
+  getPendingData, 
+  insertData, 
+  markAsSent, 
+  markAsPending, 
+  updateDestinationLocation, 
+  updateTruckDetails,
+  updateRadioactiveStatus 
+}; 

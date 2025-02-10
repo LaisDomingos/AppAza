@@ -130,8 +130,8 @@ export default function HomeScreen({ navigation }: Props) {
       "8000032", 
       selectedTruckBrand, 
       patente, 
-      nome, 
-      rut
+      rut, 
+      nome
     );
 
     setErro('');

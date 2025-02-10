@@ -75,8 +75,8 @@ const fetchDriver = async ({
         const data = await response.json();
         return data; // Retorna os dados criados
     } catch (error) {
-        console.error("Erro ao criar motorista:", error);
-        throw new Error("Erro ao criar motorista.");
+        //console.error("Erro ao criar motorista:", error);
+        //throw new Error("Erro ao criar motorista.");
     }
 };
 
