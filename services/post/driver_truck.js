@@ -39,7 +39,7 @@ const fetchDriver = async ({
         throw new Error("Todos os campos são obrigatórios");
     }
 
-    const apiUrl = "http://172.20.10.2:3000/api/drivers"; // URL da API de criação de motorista
+    const apiUrl = "http://172.20.10.2:4000/api/drivers"; // URL da API de criação de motorista
 
     try {
         const response = await fetch(apiUrl, {

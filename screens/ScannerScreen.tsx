@@ -33,6 +33,7 @@ const tags = [
 export default function ScannerScreen({ navigation, route }: Props) {
   const { truck_id } = route.params;
   const [scanCount, setScanCount] = useState(0);
+  const [isConnected, setIsConnected] = useState(true);
 
   // Carrega o contador salvo ao iniciar
   useEffect(() => {
@@ -43,6 +44,17 @@ export default function ScannerScreen({ navigation, route }: Props) {
       }
     };
     loadScanCount();
+
+    // Monitorar o status da rede
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsConnected(state.isConnected ?? false);
+      if (state.isConnected) {
+        sendPendingData();
+      }
+    });
+
+    // Limpar o ouvinte ao desmontar o componente
+    return () => unsubscribe();
   }, []);
 
   //Permissão para a pegar a localização
@@ -93,6 +105,13 @@ export default function ScannerScreen({ navigation, route }: Props) {
       }
     );
   }
+  //Enviar dados pendentes
+  async function sendPendingData() {
+    const trucks = await getPendingData();
+    for (const truck of trucks) {
+      await sendDriverData(truck);
+    }
+  }
 
   //Envia os dados 
   async function sendDriverData(truck: TruckData) {
@@ -116,14 +135,19 @@ export default function ScannerScreen({ navigation, route }: Props) {
         destination_location_code: truck.destination_location_code,
         destination_location_name: truck.destination_location_name,
       });
-      console.log("Motorista criado com sucesso:", response);
-      // Chama a função para marcar os dados como enviado
-      markAsSent(truck.id);
+  
+      if (response) {
+        console.log("Motorista criado com sucesso:", response);
+        // Chama a função para marcar os dados como enviado somente se o fetch for bem-sucedido
+        markAsSent(truck.id);
+      } else {
+        console.error("Falha ao criar motorista, sem resposta.");
+      }
     } catch (error) {
       console.error("Erro ao criar motorista:", error);
     }
   }
-  
+    
   //Faz a leitura "falsa" do NFC
   async function readNdef() {
     try {
@@ -161,12 +185,7 @@ export default function ScannerScreen({ navigation, route }: Props) {
         }
       } else if (newCount === 2) {
         updateRadioactiveStatus(truck_id, true)
-        const trucks = await getPendingData();
-
-        for (const truck of trucks) {
-          await sendDriverData(truck);
-        }
-        
+        sendPendingData();
         // Segundo scan: mostra alerta "Portal radioativo true"
         Alert.alert('Portal radiactivo', `El conductor pasó por el portal radiactivo.`, [
           {

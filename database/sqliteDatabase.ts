@@ -23,7 +23,6 @@ export type TruckData = {
   sent: number;
 };
 
-
 // Abre o banco de dados SQLite
 const db: SQLiteDatabase = SQLite.openDatabase(
   { name: 'truck.db', location: 'default' },
@@ -172,6 +171,7 @@ function getPendingData(): Promise<TruckData[]> {
 
 // Função para marcar dados como enviados
 const markAsSent = async (id: number): Promise<void> => {
+  console.log("alterando o sent para 1")
   return new Promise((resolve, reject) => {
     db.transaction((tx: Transaction) => {
       tx.executeSql(
