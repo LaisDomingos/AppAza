@@ -11,6 +11,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 export type RootStackParamList = {
   StartRoute: undefined;
   Scanner:  { truck_id: number }; 
+  BeforeScanner: undefined;
 };
 
 type StartRouteScreenNavigationProp = StackNavigationProp<RootStackParamList, 'StartRoute'>;
@@ -28,7 +29,8 @@ export default function StartRouteScreen({ navigation, route }: Props) {
     navigation.navigate('Scanner', {
       truck_id: truck_id
     });
-    setIsFinished(true); // Quando o botão for pressionado, marca como "finalizado"
+    /*navigation.navigate('BeforeScanner')
+    setIsFinished(true); // Quando o botão for pressionado, marca como "finalizado"*/
   };
 
   return (

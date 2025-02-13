@@ -33,8 +33,7 @@ const tags = [
 export default function ScannerScreen({ navigation, route }: Props) {
   const { truck_id } = route.params;
   const [scanCount, setScanCount] = useState(0);
-  const [isConnected, setIsConnected] = useState(true);
-
+  const [trySent, setTrySent] = useState(false);
   // Carrega o contador salvo ao iniciar
   useEffect(() => {
     const loadScanCount = async () => {
@@ -45,16 +44,6 @@ export default function ScannerScreen({ navigation, route }: Props) {
     };
     loadScanCount();
 
-    // Monitorar o status da rede
-    const unsubscribe = NetInfo.addEventListener(state => {
-      setIsConnected(state.isConnected ?? false);
-      if (state.isConnected) {
-        sendPendingData();
-      }
-    });
-
-    // Limpar o ouvinte ao desmontar o componente
-    return () => unsubscribe();
   }, []);
 
   //Permissão para a pegar a localização
@@ -91,7 +80,7 @@ export default function ScannerScreen({ navigation, route }: Props) {
     Geolocation.getCurrentPosition(
       position => {
         const { latitude, longitude } = position.coords;
-        console.log('Localização capturada: ', { latitude, longitude });
+        //console.log('Localização capturada: ', { latitude, longitude });
         readNdef();
       },
       error => {
@@ -105,50 +94,60 @@ export default function ScannerScreen({ navigation, route }: Props) {
       }
     );
   }
-  //Enviar dados pendentes
+  // Enviar dados pendentes
   async function sendPendingData() {
+
     const trucks = await getPendingData();
-    for (const truck of trucks) {
-      await sendDriverData(truck);
+    if (trucks.length === 0) {
+      console.log("Nenhum dado pendente para enviar.");
     }
+    let success = false;
+
+    for (const truck of trucks) {
+      const result = await sendDriverData(truck); // Tenta enviar os dados do motorista
+      if (result) {
+        success = true; // Marca sucesso se pelo menos um envio funcionar
+        break; // Interrompe o loop ao encontrar sucesso
+      }
+    }
+
+    return success; // Retorna o status final (true ou false)
+
   }
 
-  //Envia os dados 
-  async function sendDriverData(truck: TruckData) {
-    try {
-      const response = await fetchDriver({
-        unidad: truck.unidad,
-        supplier_name: truck.supplier_name,
-        supplier_rut: truck.supplier_rut,
-        truck_brand: truck.truck_brand,
-        plate: truck.plate,
-        radioactive_status: truck.radioactive_status,
-        date_time: truck.date_time,
-        driver_rut: truck.driver_rut,
-        driver_name: truck.driver_name,
-        material_destination_name: truck.material_destination_name,
-        material_destination_code: truck.material_destination_code,
-        version_name: truck.version_name,
-        version_code: truck.version_code,
-        material_origen_name: truck.material_origen_name,
-        material_origen_code: truck.material_origen_code,
-        destination_location_code: truck.destination_location_code,
-        destination_location_name: truck.destination_location_name,
-      });
-  
-      if (response) {
-        console.log("Motorista criado com sucesso:", response);
-        // Chama a função para marcar os dados como enviado somente se o fetch for bem-sucedido
-        markAsSent(truck.id);
-      } else {
-        console.error("Falha ao criar motorista, sem resposta.");
-      }
-    } catch (error) {
-      console.error("Erro ao criar motorista:", error);
+  // Envia os dados do motorista
+  async function sendDriverData(truck: TruckData): Promise<boolean> {
+    const response = await fetchDriver({
+      unidad: truck.unidad,
+      supplier_name: truck.supplier_name,
+      supplier_rut: truck.supplier_rut,
+      truck_brand: truck.truck_brand,
+      plate: truck.plate,
+      radioactive_status: truck.radioactive_status,
+      date_time: truck.date_time,
+      driver_rut: truck.driver_rut,
+      driver_name: truck.driver_name,
+      material_destination_name: truck.material_destination_name,
+      material_destination_code: truck.material_destination_code,
+      version_name: truck.version_name,
+      version_code: truck.version_code,
+      material_origen_name: truck.material_origen_name,
+      material_origen_code: truck.material_origen_code,
+      destination_location_code: truck.destination_location_code,
+      destination_location_name: truck.destination_location_name,
+    });
+
+    if (response) {
+      markAsSent(truck.id); // Marca como enviado se a resposta for bem-sucedida
+      return true;
+    } else {
+      console.error("Falha ao criar motorista, sem resposta.");
+      return false;
     }
+
   }
-    
-  //Faz a leitura "falsa" do NFC
+
+  // Faz a leitura "falsa" do NFC
   async function readNdef() {
     try {
       const newCount = scanCount + 1;
@@ -156,9 +155,7 @@ export default function ScannerScreen({ navigation, route }: Props) {
       await AsyncStorage.setItem('scanCount', newCount.toString());
 
       if (newCount === 1) {
-        // Primeiro scan: busca material
         const randomTag = tags[Math.floor(Math.random() * tags.length)];
-
         const tagData = await fetchTruckByTag(randomTag);
         updateTruckDetails(
           truck_id,
@@ -168,7 +165,8 @@ export default function ScannerScreen({ navigation, route }: Props) {
           "",
           tagData.process[0].description,
           tagData.process[0].code
-        )
+        );
+
         if (tagData?.description) {
           Alert.alert('Material', `Material: ${tagData.description}`, [
             {
@@ -184,10 +182,9 @@ export default function ScannerScreen({ navigation, route }: Props) {
           Alert.alert('Erro', 'Não foi possível encontrar o material para essa tag.');
         }
       } else if (newCount === 2) {
-        updateRadioactiveStatus(truck_id, true)
+        updateRadioactiveStatus(truck_id, true);
         sendPendingData();
-        // Segundo scan: mostra alerta "Portal radioativo true"
-        Alert.alert('Portal radiactivo', `El conductor pasó por el portal radiactivo.`, [
+        Alert.alert('Portal radioativo', `El conductor pasó por el portal radiactivo.`, [
           {
             text: 'OK',
             onPress: () => {
@@ -197,12 +194,42 @@ export default function ScannerScreen({ navigation, route }: Props) {
             },
           },
         ]);
+      } else if (newCount === 3) {
+        const state = await NetInfo.fetch();
+        if (state.isConnected) {
+          const pendingDataExists = await getPendingData();
+          if (pendingDataExists.length === 0) {
+            console.log("Nenhum dado pendente para enviar.");
+            Alert.alert('Erro', 'Nenhum dado pendente para envio.');
+            return; // Interrompe o fluxo
+          } else {
+            const success = await sendPendingData(); // Tenta enviar dados pendentes
+            if (success) {
+              Alert.alert('Sucesso', 'Dados enviados com sucesso!', [
+                {
+                  text: 'OK',
+                  onPress: () => {
+                    setTimeout(() => {
+                      navigation.navigate('StartRoute', { truck_id });
+                    }, 500);
+                  },
+                },
+              ]);
+            } else {
+              Alert.alert('Erro', 'Não foi possível enviar os dados. Tente novamente.');
+            }
+          }
+        } else {
+          Alert.alert('Erro', 'Sem conexão com a internet.');
+        }
       }
     } catch (ex) {
-      console.warn('Erro ao ler a tag:', ex);
-      Alert.alert('Erro', 'Ocorrió un error al intentar leer la etiqueta NFC.');
+      console.error("Erro no readNdef:", ex);
+      Alert.alert('Erro', 'Erro ao ler o RFID');
     }
   }
+
+
 
   return (
     <View style={styles.wrapper}>

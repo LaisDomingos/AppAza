@@ -21,13 +21,15 @@ export type TruckData = {
   destination_location_code: string;
   destination_location_name: string;
   sent: number;
+  trySent: number;
+  lastSendAttempt: number;
 };
 
 // Abre o banco de dados SQLite
 const db: SQLiteDatabase = SQLite.openDatabase(
   { name: 'truck.db', location: 'default' },
   () => {
-    console.log('Banco de dados aberto com sucesso!');
+     //console.log('Banco de dados aberto com sucesso!');
     createTable(); // Chama a função para criar a tabela após abrir o banco
   },
   (error) => {
@@ -61,9 +63,9 @@ const createTable = (): void => {
       )`, // Removida a vírgula depois de "sent INTEGER"
       [],
       () => {
-        console.log('Tabela criada com sucesso!');
+         //console.log('Tabela criada com sucesso!');
         tx.executeSql('SELECT * FROM trucks', [], (_, results) => {
-          console.log('Tabela trucks contém os seguintes dados:', results.rows.raw());
+          //console.log('Tabela trucks contém os seguintes dados:', results.rows.raw());
         });
       },
       (error: any) => console.log('Erro ao criar a tabela: ', error)
@@ -105,7 +107,7 @@ const updateDestinationLocation = (id: number, code: string, name: string): void
     tx.executeSql(
       'UPDATE trucks SET destination_location_code = ?, destination_location_name = ? WHERE id = ?',
       [code, name, id],
-      () => console.log('Destino atualizado com sucesso!'),
+      () => //console.log('Destino atualizado com sucesso!'),
       (error: any) => console.log('Erro ao atualizar destino: ', error)
     );
   });
@@ -130,7 +132,7 @@ const updateTruckDetails = (
            version_name = ?, version_code = ? 
        WHERE id = ?`,
       [materialDestinationName, materialDestinationCode, materialOrigenName, materialOrigenCode, versionName, versionCode, id],
-      () => console.log('Dados atualizados com sucesso!'),
+      () =>  //console.log('Dados atualizados com sucesso!'),
       (error: any) => console.log('Erro ao atualizar dados: ', error)
     );
   });
@@ -142,7 +144,7 @@ const updateRadioactiveStatus = (id: number, status: boolean): void => {
     tx.executeSql(
       'UPDATE trucks SET radioactive_status = ? WHERE id = ?',
       [status ? 1 : 0, id],
-      () => console.log('Status radioativo atualizado com sucesso!'),
+      () =>  //console.log('Status radioativo atualizado com sucesso!'),
       (error: any) => console.log('Erro ao atualizar status radioativo: ', error)
     );
   });
@@ -159,9 +161,7 @@ function getPendingData(): Promise<TruckData[]> {
           const trucks = resultSet.rows.raw(); // Usando raw() que retorna um array
           if (trucks.length > 0) {
             resolve(trucks as TruckData[]);
-          } else {
-            reject('Nenhum dado pendente encontrado.');
-          }
+          } 
         },
         (error: any) => reject(error)
       );
@@ -171,7 +171,6 @@ function getPendingData(): Promise<TruckData[]> {
 
 // Função para marcar dados como enviados
 const markAsSent = async (id: number): Promise<void> => {
-  console.log("alterando o sent para 1")
   return new Promise((resolve, reject) => {
     db.transaction((tx: Transaction) => {
       tx.executeSql(
@@ -179,7 +178,7 @@ const markAsSent = async (id: number): Promise<void> => {
         [id],
         (_, result) => {
           if (result.rowsAffected > 0) {
-            console.log(`Registro ${id} marcado como enviado no SQLite.`);
+             //console.log(`Registro ${id} marcado como enviado no SQLite.`);
             resolve();
           } else {
             console.warn(`Nenhum registro atualizado para ID: ${id}.`);
@@ -193,6 +192,7 @@ const markAsSent = async (id: number): Promise<void> => {
   });
 };
 
+
 const markAsPending = async (id: number): Promise<void> => {
   return new Promise((resolve, reject) => {
     db.transaction((tx: Transaction) => {
@@ -201,7 +201,7 @@ const markAsPending = async (id: number): Promise<void> => {
         [id],
         (_, result) => {
           if (result.rowsAffected > 0) {
-            console.log(`Registro ${id} marcado como pendente no SQLite.`);
+             // console.log(`Registro ${id} marcado como pendente no SQLite.`);
             resolve();
           } else {
             console.warn(`Nenhum registro atualizado para ID: ${id}.`);
@@ -212,6 +212,21 @@ const markAsPending = async (id: number): Promise<void> => {
         }
       );
     });
+  });
+};
+
+const deleteTruck = (id: number): void => {
+  db.transaction((tx: Transaction) => {
+    tx.executeSql(
+      'DELETE FROM trucks WHERE id = ?',
+      [id],
+      () => {
+        console.log(`Caminhão com ID ${id} excluído com sucesso!`);
+      },
+      (error: any) => {
+        console.log(`Erro ao excluir o caminhão com ID ${id}: `, error);
+      }
+    );
   });
 };
 
@@ -242,7 +257,7 @@ const clearAllData = (): void => {
 
 // Exportando as funções para serem usadas em outros módulos
 export { 
-  
+  deleteTruck,
   clearAllData, 
   createTable, 
   getPendingData, 
@@ -251,5 +266,6 @@ export {
   markAsPending, 
   updateDestinationLocation, 
   updateTruckDetails,
-  updateRadioactiveStatus 
+  updateRadioactiveStatus,
+  deleteData,
 }; 

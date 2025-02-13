@@ -10,7 +10,7 @@ function BeforeScanner() {
       await NfcManager.requestTechnology(NfcTech.Ndef);
       const tag = await NfcManager.getTag();
 
-      console.warn('Tag completa:', tag); // Inspecione o objeto retornado
+      console.log('Tag completa:', tag); // Inspecione o objeto retornado
 
       if (tag?.id) {
         const cardNumber = tag.id; // Substitua por outro campo, se necessário
