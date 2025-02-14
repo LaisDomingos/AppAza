@@ -155,7 +155,7 @@ export default function ScannerScreen({ navigation, route }: Props) {
       await AsyncStorage.setItem('scanCount', newCount.toString());
 
       if (newCount === 1) {
-        const randomTag = tags[Math.floor(Math.random() * tags.length)];
+        /*const randomTag = tags[Math.floor(Math.random() * tags.length)];
         const tagData = await fetchTruckByTag(randomTag);
         updateTruckDetails(
           truck_id,
@@ -180,7 +180,27 @@ export default function ScannerScreen({ navigation, route }: Props) {
           ]);
         } else {
           Alert.alert('Erro', 'Não foi possível encontrar o material para essa tag.');
-        }
+        }*/
+        updateTruckDetails(
+          truck_id,
+          "CONSUMO-CHATARRA BOLAS",
+          "56000523",
+          "",
+          "",
+          "CLASIFICACION",
+          "V001"
+        );
+        Alert.alert('Material', `Material: CONSUMO-CHATARRA BOLAS`, [
+          {
+            text: 'OK',
+            onPress: () => {
+              setTimeout(() => {
+                navigation.navigate('StartRoute', { truck_id });
+              }, 500);
+            },
+          },
+        ]);
+
       } else if (newCount === 2) {
         updateRadioactiveStatus(truck_id, true);
         sendPendingData();
@@ -243,8 +263,13 @@ export default function ScannerScreen({ navigation, route }: Props) {
       <Text style={styles.title}>Escáner NFC</Text>
 
       <TouchableOpacity style={styles.button} onPress={getLocationAndScan}>
-        <Text style={styles.buttonText}>Escanear la etiqueta</Text>
+        <Text style={styles.buttonText}>
+          {scanCount === 0 && 'Escanear material'}
+          {scanCount === 1 && 'Escanear portal radioativo'}
+          {scanCount >= 2 && 'Escanear pesagem'}
+        </Text>
       </TouchableOpacity>
+
     </View>
   );
 }
