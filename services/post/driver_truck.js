@@ -19,6 +19,7 @@ const fetchDriver = async ({
     destination_location_code,
     destination_location_name,
 }) => {
+    console.log(unidad, supplier_name, supplier_rut, truck_brand, plate, radioactive_status, date_time, driver_rut, driver_name, material_destination_name, material_destination_code, version_name, version_code, material_origen_name, material_origen_code, destination_location_code, destination_location_name);
     if (
         [unidad, supplier_name, supplier_rut, truck_brand, plate, date_time, driver_rut, driver_name, 
         material_destination_name, material_destination_code, version_name, version_code, 
@@ -48,7 +49,7 @@ const fetchDriver = async ({
                 supplier_rut,
                 truck_brand,
                 plate,
-                radioactive,
+                radioactive_status,
                 date_time,
                 driver_rut,
                 driver_name,
@@ -62,7 +63,7 @@ const fetchDriver = async ({
                 destination_location_name,
             }),
         });
-
+        console.log(body)
         if (!response.ok) {
             const errorBody = await response.text();
             throw new Error(`Falha ao criar motorista. Status: ${response.status}. Detalhes: ${errorBody}`);
