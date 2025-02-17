@@ -3,8 +3,8 @@ import Geolocation from 'react-native-geolocation-service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { saveLocations } from '../../database/location';
-import { updateTruckDetails, updateRadioactiveStatus, getPendingData } from '../../database/sqliteDatabase';
-import {sendPendingData} from './sendPendingData';	
+import { updateTruckDetails, updateRadioactiveStatus, getPendingData, getData } from '../../database/sqliteDatabase';
+import { sendPendingData } from './sendPendingData';
 import { requestLocationPermission } from './requestLocationPermission';
 
 const tags = [
@@ -30,6 +30,7 @@ export async function readNfc(scanCount: number, setScanCount: React.Dispatch<Re
         const { latitude, longitude } = position.coords;
 
         const newCount = scanCount + 1;
+        console.log('newCount:', newCount)
         setScanCount(newCount);
         await AsyncStorage.setItem('scanCount', newCount.toString());
 
@@ -87,26 +88,31 @@ export async function readNfc(scanCount: number, setScanCount: React.Dispatch<Re
               },
             },
           ]);
-        } else if (newCount === 3) {
-          saveLocations([
+        } else if (newCount >= 3) {
+          /*saveLocations([
             {
               latitude: latitude.toString(),
               longitude: longitude.toString(),
               tag: 'Tag pesagem',
               material: 'pesagem',
             },
-          ]);
+          ]);*/
+          const trucks = await getData();
 
-          const state = await NetInfo.fetch();
-          if (state.isConnected) {
-            const pendingDataExists = await getPendingData();
-            if (pendingDataExists.length === 0) {
-              Alert.alert('Erro', 'Nenhum dado pendente para envio.');
-              return;
-            } else {
+          // Filtra os dados com 'sent' igual a 0
+          const sentEqualZero = trucks.filter(truck => truck.sent === 0);
+          console.log('Trucks com sent igual a 0:', sentEqualZero);
+          // Verifica se não há trucks com 'sent' igual a 0
+          if (sentEqualZero.length === 0) {
+            Alert.alert('Éxito', 'No hay datos pendientes para ser enviados.');
+            return;
+          } else {
+
+            const state = await NetInfo.fetch();
+            if (state.isConnected) {
               const success = await sendPendingData();
               if (success) {
-                Alert.alert('Sucesso', 'Dados enviados com sucesso!', [
+                Alert.alert('Éxito', 'Datos enviados con éxito!', [
                   {
                     text: 'OK',
                     onPress: () => {
@@ -117,11 +123,11 @@ export async function readNfc(scanCount: number, setScanCount: React.Dispatch<Re
                   },
                 ]);
               } else {
-                Alert.alert('Erro', 'Não foi possível enviar os dados. Tente novamente.');
+                Alert.alert('Error', 'No se pudo enviar los datos. Inténtalo de nuevo.');
               }
+            } else {
+              Alert.alert('Error', 'Sin conexión a internet.');
             }
-          } else {
-            Alert.alert('Erro', 'Sem conexão com a internet.');
           }
         }
       },

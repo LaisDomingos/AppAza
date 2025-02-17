@@ -169,6 +169,23 @@ function getPendingData(): Promise<TruckData[]> {
   });
 }
 
+function getData(): Promise<TruckData[]> {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx: Transaction) => {
+      tx.executeSql(
+        'SELECT * FROM trucks',
+        [],
+        (_, resultSet: ResultSet) => {
+          const trucks = resultSet.rows.raw(); // Usando raw() que retorna um array
+          if (trucks.length > 0) {
+            resolve(trucks as TruckData[]);
+          } 
+        },
+        (error: any) => reject(error)
+      );
+    });
+  });
+}
 // Função para marcar dados como enviados
 const markAsSent = async (id: number): Promise<void> => {
   return new Promise((resolve, reject) => {
@@ -268,4 +285,5 @@ export {
   updateTruckDetails,
   updateRadioactiveStatus,
   deleteData,
+  getData
 }; 

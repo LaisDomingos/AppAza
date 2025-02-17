@@ -11,7 +11,8 @@ export const setupDatabase = () => {
         tx.executeSql(
             'CREATE TABLE IF NOT EXISTS location (latitude TEXT, longitude TEXT, tag TEXT, descricao TEXT);',
             [],
-            () => console.log('Tabela "location" criada com sucesso ou já existe.'),
+            // () => console.log('Tabela "location" criada com sucesso ou já existe.'),
+            () => {},
             (_, error) => {
                 console.error('Erro ao criar a tabela "location":', error);
                 return false;
@@ -19,7 +20,6 @@ export const setupDatabase = () => {
         );
     });
 };
-
 
 // Salvar localizações no banco de dados
 export const saveLocations = (locations: { latitude: string; longitude: string; tag: string; material: string }[]) => {

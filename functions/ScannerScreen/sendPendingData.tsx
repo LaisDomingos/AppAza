@@ -2,6 +2,7 @@ import { getPendingData } from '../../database/sqliteDatabase'; // Importe a fun
 import { sendDriverData } from './sendDriverData';
 
 export async function sendPendingData() {
+  //console.log("Enviando dados pendentes...");
   const trucks = await getPendingData();
   if (trucks.length === 0) {
     console.log("Nenhum dado pendente para enviar.");

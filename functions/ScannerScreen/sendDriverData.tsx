@@ -2,6 +2,7 @@ import fetchDriver from '../../services/post/driver_truck'; // Importe o serviç
 import { TruckData, markAsSent } from '../../database/sqliteDatabase'; // Importe a função para marcar como enviado
 
 export async function sendDriverData(truck: TruckData): Promise<boolean> {
+  //console.log("Enviando dados do motorista: ", truck);
   const response = await fetchDriver({
     unidad: truck.unidad,
     supplier_name: truck.supplier_name,
@@ -21,7 +22,6 @@ export async function sendDriverData(truck: TruckData): Promise<boolean> {
     destination_location_code: truck.destination_location_code,
     destination_location_name: truck.destination_location_name,
   });
-
   if (response) {
     markAsSent(truck.id); // Marca como enviado se a resposta for bem-sucedida
     return true;
