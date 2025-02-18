@@ -29,7 +29,7 @@ const fetchDriver = async ({
         throw new Error("Todos os campos são obrigatórios.");
     }
 
-    const apiUrl = "http://192.168.0.107:4000/api/drivers";
+    const apiUrl = "https://apim-aza-dev.azure-api.net/middleware/api/truck_queue/";
 
     try {
         const payload = {
@@ -58,9 +58,12 @@ const fetchDriver = async ({
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNGVmYjBlM2FiOTI4MDA1MGMzOTExZiIsIm5hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczOTg3NzEwMywiZXhwIjoxNzM5OTA1OTAzfQ.FVOoe0JHzTHy_wuzbY8tPi-AdQUL-adAiqsKC29ciRI",
+                "Ocp-Apim-Subscription-Key": "db16736cbf5149e7bcff9a86d27da1ac"
             },
             body: JSON.stringify(payload),
         });
+        
 
         console.log("Response status:", response.status);
         const responseBody = await response.text();

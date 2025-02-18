@@ -89,14 +89,14 @@ export async function readNfc(scanCount: number, setScanCount: React.Dispatch<Re
             },
           ]);
         } else if (newCount >= 3) {
-          /*saveLocations([
+          saveLocations([
             {
               latitude: latitude.toString(),
               longitude: longitude.toString(),
               tag: 'Tag pesagem',
               material: 'pesagem',
             },
-          ]);*/
+          ]);
           const trucks = await getData();
 
           // Filtra os dados com 'sent' igual a 0
@@ -126,7 +126,7 @@ export async function readNfc(scanCount: number, setScanCount: React.Dispatch<Re
                 Alert.alert('Error', 'No se pudo enviar los datos. Inténtalo de nuevo.');
               }
             } else {
-              Alert.alert('Error', 'Sin conexión a internet.');
+              Alert.alert('Error', 'Sin conexión a internet.Inténtalo de nuevo.');
             }
           }
         }
