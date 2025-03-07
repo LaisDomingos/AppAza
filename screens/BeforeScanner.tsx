@@ -1,19 +1,41 @@
-import React from 'react'; 
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
 
 NfcManager.start();
 
 function BeforeScanner() {
+  
+  useEffect(() => {
+    async function checkNFC() {
+      const isSupported = await NfcManager.isSupported();
+      console.log('NFC Suportado:', isSupported);
+
+      const isEnabled = await NfcManager.isEnabled();
+      console.log('NFC Ativado:', isEnabled);
+
+      if (!isEnabled) {
+        Alert.alert('Atenção', 'O NFC está desligado');
+      }
+    }
+
+    checkNFC();
+  }, []);
+
   async function readNdef() {
     try {
-      await NfcManager.requestTechnology(NfcTech.Ndef);
+      console.log('Tentando ler tag...');
+  
+      console.log('Cancelando requisição antiga...');
+      await NfcManager.cancelTechnologyRequest();
+  
+      await NfcManager.requestTechnology([NfcTech.Ndef, NfcTech.NfcA, NfcTech.NfcB]);
+  
       const tag = await NfcManager.getTag();
-
-      console.log('Tag completa:', tag); // Inspecione o objeto retornado
-
+      console.log('Tag completa:', tag);
+  
       if (tag?.id) {
-        const cardNumber = tag.id; // Substitua por outro campo, se necessário
+        const cardNumber = tag.id;
         Alert.alert('Cartão Lido', `Número do cartão (RFID): ${cardNumber}`);
       } else {
         Alert.alert('Erro', 'Não foi possível encontrar o número do cartão.');
@@ -22,9 +44,11 @@ function BeforeScanner() {
       console.warn('Erro ao ler a tag:', ex);
       Alert.alert('Erro', 'Ocorreu um erro ao tentar ler a tag NFC.');
     } finally {
-      NfcManager.cancelTechnologyRequest();
+      console.log('Cancelando requisição ativa (final)');
+      await NfcManager.cancelTechnologyRequest();
     }
   }
+  
 
   return (
     <View style={styles.wrapper}>

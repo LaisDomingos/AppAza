@@ -21,11 +21,11 @@ export default function StartRouteScreen({ navigation, route }: Props) {
   const { truck_id } = route.params;
 
   const handleStartRoute = () => {
-    navigation.navigate('Scanner', {
+    /*navigation.navigate('Scanner', {
       truck_id: truck_id
-    });
-    /*navigation.navigate('BeforeScanner')
-    setIsFinished(true); // Quando o botão for pressionado, marca como "finalizado"*/
+    });*/
+    navigation.navigate('BeforeScanner')
+    
   };
 
   return (

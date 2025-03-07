@@ -9,14 +9,12 @@ import { handleLogin } from '../functions/HomeScreen/login';
 import { loadData } from '../functions/HomeScreen/loadData';
 import { changeScanCount } from '../functions/HomeScreen/changeScanCount';
 import { styles } from '../styles/HomeScreen.styles';
+import { saveDataAsync } from '../functions/HomeScreen/saveDataAsync';
+import { fetchToken } from '../functions/HomeScreen/verifyLogin';
 
 export type RootStackParamList = {
   Home: undefined; // Home não recebe parâmetros
   DestinationPoint: {
-    nome_driver: string;
-    patente: string;
-    rut_driver: string;
-    truck_brand: string;
     truck_id: number
   };
 };
@@ -28,12 +26,13 @@ type Props = {
 };
 
 type Truck = {
-  plate: string; 
+  plate: string;
   brand: string;
 };
 
 export default function HomeScreen({ navigation }: Props) {
   const [nome, setNome] = useState<string>(''); // Estado para o nome
+  const [driverId, setDriverId] = useState<string>(''); // Estado para o driver id
   const [rut, setRut] = useState<string>(''); // Estado para o RUT
   const [patente, setPatente] = useState<string>(''); // Estado para a patente
   const [erro, setErro] = useState<string>(''); // Estado para mensagem de erro
@@ -42,58 +41,26 @@ export default function HomeScreen({ navigation }: Props) {
   const [patentesfetch, setPatentesFetch] = useState<string[]>([]); // Estado para patentes buscadas
   const [brands, setBrands] = useState<{ [key: string]: string }>({}); // Mapeamento patente -> marca
   const [truckBrands, setTruckBrands] = useState<{ [key: string]: string }>({}); // Estado para armazenar mapeamento patente -> marca
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    // Carregar dados de login persistentes
-    const loadPersistentLogin = async () => {
-      const storedNome = await AsyncStorage.getItem('nome');
-      const storedRut = await AsyncStorage.getItem('rut');
-      const storedPatente = await AsyncStorage.getItem('patente');
-      const lastLoginTime = await AsyncStorage.getItem('lastLoginTime');
-
-      const currentTime = new Date().getTime(); // Hora atual em milissegundos
-      const diffTime = currentTime - (lastLoginTime ? parseInt(lastLoginTime) : 0); // Diferença em milissegundos
-
-      if (storedNome && storedRut && storedPatente && diffTime < 120000) { // 120000 ms = 2 minutos... para 24hs = 86400000
-        setNome(storedNome);
-        setRut(storedRut);
-        setPatente(storedPatente);
-        
-        // Mandando direto pra página DestinationPoint
-        navigation.replace('DestinationPoint', {
-          nome_driver: storedNome,
-          patente: storedPatente,
-          rut_driver: storedRut,
-          truck_brand: brands[storedPatente] || '',
-          truck_id: 0
-        });
-      } else {
-        // Se passaram mais de 2 minutos ou o login não existir, limpa os dados
-        AsyncStorage.removeItem('nome');
-        AsyncStorage.removeItem('rut');
-        AsyncStorage.removeItem('patente');
-      }
-    };
-
-    loadPersistentLogin(); // Carrega os dados salvos
-
     getPendingData();
     changeScanCount();
     loadData(
-      setMotoristas, 
-      setPatentesFetch, 
-      setTruckBrands, 
-      setBrands, 
-      setErro, 
+      setMotoristas,
+      setPatentesFetch,
+      setTruckBrands,
+      setBrands,
+      setErro,
       setLoading
     );
+    fetchToken(navigation, setToken); 
   }, []);
 
-  const handlePersistentLogin = async () => {
-    await AsyncStorage.setItem('nome', nome);
-    await AsyncStorage.setItem('rut', rut);
-    await AsyncStorage.setItem('patente', patente);
-    await AsyncStorage.setItem('lastLoginTime', new Date().getTime().toString()); // Salva a hora do login
+
+  const getDriverId = (name: string) => {
+    const driver = motoristas.find((driver) => driver.name === name);
+    return driver ? driver.id : '';
   };
 
   return (
@@ -107,7 +74,10 @@ export default function HomeScreen({ navigation }: Props) {
         ) : (
           <SelectDropdown
             data={motoristas.map(driver => driver.name)}
-            onSelect={(selectedItem) => setNome(selectedItem)}
+            onSelect={(selectedItem) => {
+              setNome(selectedItem);
+              setDriverId(getDriverId(selectedItem)); // Salva o id do motorista
+            }}
             renderButton={(selectedItem) => (
               <View style={styles.dropdownButtonStyle}>
                 <Text style={styles.dropdownButtonTxtStyle}>
@@ -166,8 +136,7 @@ export default function HomeScreen({ navigation }: Props) {
       <TouchableOpacity
         style={styles.button}
         onPress={() => {
-          handleLogin(nome, rut, patente, motoristas, truckBrands, setErro, navigation);
-          handlePersistentLogin(); // Salvar os dados de login
+          handleLogin(nome, driverId, rut, patente, motoristas, truckBrands, setErro, navigation);
         }}
       >
         <Text style={styles.buttonText}>Login</Text>

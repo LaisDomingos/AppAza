@@ -42,7 +42,7 @@ const fetchDriver = async ({
   }
 
   const apiUrl =
-    "https://apim-aza-dev.azure-api.net/middleware/api/truck_queue/";
+    "http://localhost:4000/api/drivers";
 
   try {
     const payload = {

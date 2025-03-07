@@ -8,6 +8,7 @@ import LoadingScreen from './screens/LoadingScreen'; // Tela de carregamento
 import DestinationPointScreen from './screens/DestinationPointScreen';
 import ScannerScreen from './screens/ScannerScreen';
 import StartRouteSreen from './screens/StartRouteScreen';
+import BeforeScanner from './screens/BeforeScanner.tsx';
 
 const Stack = createStackNavigator();
 
@@ -56,6 +57,11 @@ function App() {
           <Stack.Screen
             name="StartRoute"
             component={StartRouteSreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="BeforeScanner"
+            component={BeforeScanner}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>
