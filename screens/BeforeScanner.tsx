@@ -1,11 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
+import Geolocation from '@react-native-community/geolocation';
 
 NfcManager.start();
 
 function BeforeScanner() {
-  
+  const [location, setLocation] = useState(null);
+
   useEffect(() => {
     async function checkNFC() {
       const isSupported = await NfcManager.isSupported();
@@ -23,17 +25,19 @@ function BeforeScanner() {
   }, []);
 
   async function readNdef() {
+    // Chama a função para obter a localização quando o NFC for lido
+    getLocation();
     try {
       console.log('Tentando ler tag...');
-  
+
       console.log('Cancelando requisição antiga...');
       await NfcManager.cancelTechnologyRequest();
-  
+
       await NfcManager.requestTechnology([NfcTech.Ndef, NfcTech.NfcA, NfcTech.NfcB]);
-  
+
       const tag = await NfcManager.getTag();
       console.log('Tag completa:', tag);
-  
+
       if (tag?.id) {
         const cardNumber = tag.id;
         Alert.alert('Cartão Lido', `Número do cartão (RFID): ${cardNumber}`);
@@ -48,7 +52,25 @@ function BeforeScanner() {
       await NfcManager.cancelTechnologyRequest();
     }
   }
-  
+
+  // Função separada para pegar a geolocalização
+  function getLocation() {
+   Geolocation.getCurrentPosition(
+       position => {
+         const { latitude, longitude } = position.coords;
+         console.log('Localização:', latitude, longitude);
+       },
+       error => {
+         console.warn('Erro ao obter localização:', error);
+         Alert.alert('Erro', 'Não foi possível obter a localização.');
+       },
+       {
+         enableHighAccuracy: true,
+         timeout: 15000,
+         maximumAge: 10000,
+       }
+     );
+  }
 
   return (
     <View style={styles.wrapper}>

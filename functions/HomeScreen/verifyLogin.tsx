@@ -18,11 +18,9 @@ export const fetchToken = async (navigation: any, setToken: any) => {
     const diffInMinutes = (now.getTime() - loginDate.getTime()) / (1000 * 60); // Diferença em minutos
 
     if (diffInMinutes > 2) {
-      console.log("Tempo expirado, removendo token...");
       saveDataAsync('remove', '', 0); // Remove os dados do AsyncStorage
       setToken(null); // Remove o token do estado também
     } else {
-      console.log("Token válido ainda!");
       // Navega para a página DestinationPoint, passando os dados necessários
       navigation.navigate('DestinationPoint', {
         truck_id: truckId // Passa o ID do caminhão
