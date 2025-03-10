@@ -61,8 +61,10 @@ export const handleLogin = async (
   } catch (error) {
     // Exibe a mensagem de erro se falhar no login
     if (error instanceof Error) {
-      setErro(error.message);
-      Alert.alert("Erro", error.message); // Exibe o erro como um alerta
+      console.log("ERROOOOOOOOO: ", error.message)
+      if (error.message === "Network request failed"){
+        setErro('Sin internet no es posible iniciar sesión');
+      }
     } else {
       setErro('An unknown error occurred.');
       Alert.alert("Erro", 'An unknown error occurred.'); // Exibe o erro como um alerta

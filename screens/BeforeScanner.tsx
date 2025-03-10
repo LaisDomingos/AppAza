@@ -25,6 +25,7 @@ function BeforeScanner() {
   }, []);
 
   async function readNdef() {
+
     // Chama a função para obter a localização quando o NFC for lido
     getLocation();
     try {

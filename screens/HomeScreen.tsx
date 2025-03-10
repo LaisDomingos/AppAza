@@ -11,6 +11,7 @@ import { changeScanCount } from '../functions/HomeScreen/changeScanCount';
 import { styles } from '../styles/HomeScreen.styles';
 import { saveDataAsync } from '../functions/HomeScreen/saveDataAsync';
 import { fetchToken } from '../functions/HomeScreen/verifyLogin';
+import { getDrivers } from '../database/database';
 
 export type RootStackParamList = {
   Home: undefined; // Home não recebe parâmetros
@@ -44,6 +45,7 @@ export default function HomeScreen({ navigation }: Props) {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
+    getDrivers();
     getPendingData();
     changeScanCount();
     loadData(

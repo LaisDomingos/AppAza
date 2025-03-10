@@ -17,6 +17,7 @@ const tags = [
 ];
 
 export async function readNfc(scanCount: number, setScanCount: React.Dispatch<React.SetStateAction<number>>, truck_id: number, navigation: any) {
+  console.log("quero ver o NFC")
   try {
     // Verificação de permissão de localização
     const hasPermission = await requestLocationPermission();

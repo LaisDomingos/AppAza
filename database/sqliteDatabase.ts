@@ -65,7 +65,7 @@ const createTable = (): void => {
       () => {
          //console.log('Tabela criada com sucesso!');
         tx.executeSql('SELECT * FROM trucks', [], (_, results) => {
-          //console.log('Tabela trucks contém os seguintes dados:', results.rows.raw());
+        console.log('Tabela trucks contém os seguintes dados:', results.rows.raw());
         });
       },
       (error: any) => console.log('Erro ao criar a tabela: ', error)

@@ -1,0 +1,118 @@
+{
+    "data": [
+        {
+            "plate": "GPGJ33",
+            "brand": "Mercedes Benz",
+            "subscribeDate": "2022-10-18T19:58:50.783Z",
+            "id": "634f05925ea728a82bc936ad"
+        },
+        {
+            "plate": "GLCC22",
+            "brand": "Mercedes Benz",
+            "subscribeDate": "2022-10-18T19:58:50.783Z",
+            "id": "634f059c5ea728a82bc936b1"
+        },
+        {
+            "plate": "GKSD57",
+            "brand": "Scania",
+            "subscribeDate": "2022-10-18T19:58:50.783Z",
+            "id": "634f05a25ea728a82bc936b4"
+        },
+        {
+            "plate": "XP1372",
+            "brand": "Freightliner",
+            "subscribeDate": "2022-10-18T19:58:50.783Z",
+            "id": "634f05ac5ea728a82bc936b7"
+        },
+        {
+            "plate": "RX5612",
+            "brand": "Freightliner",
+            "subscribeDate": "2022-10-18T19:58:50.783Z",
+            "id": "634f05b55ea728a82bc936bb"
+        },
+        {
+            "plate": "BPHF11",
+            "brand": "Freightliner",
+            "subscribeDate": "2022-10-18T19:58:50.783Z",
+            "id": "634f05b95ea728a82bc936be"
+        },
+        {
+            "plate": "CXGF31",
+            "brand": "Freightliner",
+            "subscribeDate": "2022-10-18T19:58:50.783Z",
+            "id": "634f05be5ea728a82bc936c1"
+        },
+        {
+            "plate": "RD1714",
+            "brand": "none",
+            "subscribeDate": "2022-10-28T11:04:29.332Z",
+            "id": "635bb743f126c161baee8a4f"
+        },
+        {
+            "plate": "DWWL56",
+            "brand": "none",
+            "subscribeDate": "2022-10-28T11:04:29.332Z",
+            "id": "635bb748f126c161baee8a52"
+        },
+        {
+            "plate": "FPTX40",
+            "brand": "none",
+            "subscribeDate": "2022-10-28T11:04:29.332Z",
+            "id": "635bb751f126c161baee8a55"
+        },
+        {
+            "plate": "DWWL58",
+            "brand": "none",
+            "subscribeDate": "2022-10-28T11:04:29.332Z",
+            "id": "635bb75cf126c161baee8a58"
+        },
+        {
+            "plate": "GLCC25",
+            "brand": "none",
+            "subscribeDate": "2022-10-28T11:04:29.332Z",
+            "id": "635bb766f126c161baee8a5b"
+        },
+        {
+            "plate": "DLYY58",
+            "brand": "Freightliner",
+            "subscribeDate": "2022-12-29T19:12:12.316Z",
+            "id": "63ad649307209fd18c7b9066"
+        },
+        {
+            "plate": "JCHJ83",
+            "brand": "-",
+            "subscribeDate": "2023-06-02T09:39:12.316Z",
+            "id": "6479b8c571560ee6b5dac709"
+        },
+        {
+            "plate": "JCHJ81",
+            "brand": "-",
+            "subscribeDate": "2023-06-02T09:39:12.316Z",
+            "id": "6479b8ee71560ee6b5dac70a"
+        },
+        {
+            "plate": "JCHJ80",
+            "brand": "-",
+            "subscribeDate": "2023-10-16T20:39:12.316Z",
+            "id": "652d90425d55aaf069f8adf8"
+        },
+        {
+            "plate": "YS8947",
+            "brand": "-",
+            "subscribeDate": "2024-10-03T09:04:55.854Z",
+            "id": "66fec668a0c8651c87df52d6"
+        },
+        {
+            "plate": "FSTL43",
+            "brand": "-",
+            "subscribeDate": "2024-10-03T09:04:55.854Z",
+            "id": "66fec69ea0c8651c87df52d9"
+        },
+        {
+            "plate": "GGGG21",
+            "brand": "Mercedes",
+            "subscribeDate": "2025-01-06T09:10:15.133Z",
+            "id": "677ff2cf866bb2a766b0d6cd"
+        }
+    ]
+}

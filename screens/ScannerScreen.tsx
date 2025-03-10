@@ -33,9 +33,9 @@ const tags = [
 export default function ScannerScreen({ navigation, route }: Props) {
   const { truck_id } = route.params;
   const [scanCount, setScanCount] = useState(0);
-  const [trySent, setTrySent] = useState(false);
   // Carrega o contador salvo ao iniciar
   useEffect(() => {
+    console.log("page scanner")
     setupDatabase();
     const loadScanCount = async () => {
       const savedCount = await AsyncStorage.getItem('scanCount');

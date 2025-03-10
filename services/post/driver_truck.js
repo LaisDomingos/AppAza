@@ -64,7 +64,7 @@ const fetchDriver = async ({
       destination_location_code,
       destination_location_name,
     };
-
+    console.log("Payload: ", payload)
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {

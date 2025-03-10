@@ -12,7 +12,7 @@ export const getLocationScan = async (readNdef: Function) => {
   Geolocation.getCurrentPosition(
     position => {
       const { latitude, longitude } = position.coords;
-      // Chama a função readNdef que será passada como parâmetro
+      console.log(latitude, longitude)
       readNdef();
     },
     error => {

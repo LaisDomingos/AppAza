@@ -49,7 +49,7 @@ export const getDrivers = (): Promise<any[]> => {
                     resolve(rows.raw()); // Retorna os motoristas quando a consulta terminar
                 },
                 (_, error) => {
-                    console.error('Erro ao buscar motoristas:', error);
+                    //console.error('Erro ao buscar motoristas:', error);
                     reject(error); // Retorna um erro, caso ocorra
                     return false;
                 }
