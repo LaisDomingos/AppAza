@@ -2,27 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
 import Geolocation from '@react-native-community/geolocation';
+import { sendLocation } from '../services/post/location';
 
 NfcManager.start();
 
 function BeforeScanner() {
   const [location, setLocation] = useState(null);
-
-  useEffect(() => {
-    async function checkNFC() {
-      const isSupported = await NfcManager.isSupported();
-      console.log('NFC Suportado:', isSupported);
-
-      const isEnabled = await NfcManager.isEnabled();
-      console.log('NFC Ativado:', isEnabled);
-
-      if (!isEnabled) {
-        Alert.alert('Atenção', 'O NFC está desligado');
-      }
-    }
-
-    checkNFC();
-  }, []);
 
   async function readNdef() {
 
@@ -56,21 +41,22 @@ function BeforeScanner() {
 
   // Função separada para pegar a geolocalização
   function getLocation() {
-   Geolocation.getCurrentPosition(
-       position => {
-         const { latitude, longitude } = position.coords;
-         console.log('Localização:', latitude, longitude);
-       },
-       error => {
-         console.warn('Erro ao obter localização:', error);
-         Alert.alert('Erro', 'Não foi possível obter a localização.');
-       },
-       {
-         enableHighAccuracy: true,
-         timeout: 15000,
-         maximumAge: 10000,
-       }
-     );
+    Geolocation.getCurrentPosition(
+        position => {
+          const { latitude, longitude } = position.coords;
+          console.log(latitude, longitude)
+          sendLocation(latitude,longitude, "890123", "Tag One")
+        },
+        error => {
+          console.warn('Erro ao obter localização:', error);
+          Alert.alert('Erro', 'Não foi possível obter a localização.');
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 15000,
+          maximumAge: 10000,
+        }
+      );
   }
 
   return (
@@ -84,7 +70,7 @@ function BeforeScanner() {
 
       <Text style={styles.title}>NFC Scanner</Text>
 
-      <TouchableOpacity style={styles.button} onPress={readNdef}>
+      <TouchableOpacity style={styles.button} onPress={getLocation}>
         <Text style={styles.buttonText}>Scan a Tag</Text>
       </TouchableOpacity>
     </View>

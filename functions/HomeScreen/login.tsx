@@ -61,7 +61,6 @@ export const handleLogin = async (
   } catch (error) {
     // Exibe a mensagem de erro se falhar no login
     if (error instanceof Error) {
-      console.log("ERROOOOOOOOO: ", error.message)
       if (error.message === "Network request failed"){
         setErro('Sin internet no es posible iniciar sesión');
       }

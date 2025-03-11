@@ -6,7 +6,6 @@ export const handleStart = (
   setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>,
   navigation: any // Aqui você pode ajustar o tipo conforme a navegação
 ) => {
-console.log("clicou pra iniciar a rota");
   if (!selectedSetor) {
     setErrorMessage('Por favor, seleccione un sector.');
     return;

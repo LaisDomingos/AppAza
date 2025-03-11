@@ -9,7 +9,7 @@ const db = SQLite.openDatabase(
 export const setupDatabase = () => {
     db.transaction(tx => {
         tx.executeSql(
-            'CREATE TABLE IF NOT EXISTS location (latitude TEXT, longitude TEXT, tag TEXT, descricao TEXT);',
+            'CREATE TABLE IF NOT EXISTS location (latitude TEXT, longitude TEXT, tag TEXT, descricao TEXT, sent INTEGER);',
             [],
             // () => console.log('Tabela "location" criada com sucesso ou já existe.'),
             () => {},
@@ -22,11 +22,11 @@ export const setupDatabase = () => {
 };
 
 // Salvar localizações no banco de dados
-export const saveLocations = (locations: { latitude: string; longitude: string; tag: string; material: string }[]) => {
+export const saveLocations = (locations: { latitude: string; longitude: string; tag: string; material: string; sent: number }[]) => {
     db.transaction(tx => {
         locations.forEach(location => {
             tx.executeSql(
-                'INSERT INTO location (latitude, longitude, tag, descricao) VALUES (?, ?, ?, ?);',
+                'INSERT INTO location (latitude, longitude, tag, descricao, sent) VALUES (?, ?, ?, ?, ?);',
                 [location.latitude, location.longitude, location.tag, location.material]
             );
         });
@@ -47,6 +47,27 @@ export const getLocations = (): Promise<any[]> => {
                 (_, error) => {
                     console.error('Erro ao buscar localizações:', error);
                     reject(error); // Retorna um erro, caso ocorra
+                    return false;
+                }
+            );
+        });
+    });
+};
+
+// Busca os com sent 0
+export const getLocationsZero = (): Promise<any[]> => {
+    return new Promise((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                'SELECT * FROM location WHERE sent = 0;',
+                [],
+                (_, { rows }) => {
+                    console.log('Localizações com senta = 0:', rows.raw());
+                    resolve(rows.raw()); // Retorna os dados filtrados
+                },
+                (_, error) => {
+                    console.error('Erro ao buscar localizações com senta = 0:', error);
+                    reject(error);
                     return false;
                 }
             );
