@@ -9,10 +9,9 @@ const db = SQLite.openDatabase(
 export const setupDatabase = () => {
     db.transaction(tx => {
         tx.executeSql(
-            'CREATE TABLE IF NOT EXISTS location (latitude TEXT, longitude TEXT, tag TEXT, descricao TEXT, sent INTEGER);',
-            [],
-            // () => console.log('Tabela "location" criada com sucesso ou já existe.'),
-            () => {},
+            'CREATE TABLE IF NOT EXISTS location (id INTEGER PRIMARY KEY AUTOINCREMENT, latitude TEXT, longitude TEXT, tag TEXT, descricao TEXT, sent INTEGER);',
+            [], 
+            () => console.log('Tabela "location" criada com sucesso ou já existe.'),
             (_, error) => {
                 console.error('Erro ao criar a tabela "location":', error);
                 return false;
@@ -23,11 +22,13 @@ export const setupDatabase = () => {
 
 // Salvar localizações no banco de dados
 export const saveLocations = (locations: { latitude: string; longitude: string; tag: string; material: string; sent: number }[]) => {
+    console.log("Salvando as localizações:", locations);  // Console log para ver o que está sendo enviado
     db.transaction(tx => {
         locations.forEach(location => {
+            console.log("Enviando para o banco:", location); // Console log para cada local individual
             tx.executeSql(
                 'INSERT INTO location (latitude, longitude, tag, descricao, sent) VALUES (?, ?, ?, ?, ?);',
-                [location.latitude, location.longitude, location.tag, location.material]
+                [location.latitude, location.longitude, location.tag, location.material, location.sent]
             );
         });
     });
@@ -72,5 +73,22 @@ export const getLocationsZero = (): Promise<any[]> => {
                 }
             );
         });
+    });
+};
+
+// Update de envio
+export const updateLocationSentStatus = (id: number) => {
+    db.transaction(tx => {
+        tx.executeSql(
+            'UPDATE location SET sent = 1 WHERE id = ?;',
+            [id],
+            () => {
+                console.log('Localização marcada como enviada');
+            },
+            (_, error) => {
+                console.error('Erro ao atualizar status "sent":', error);
+                return false;
+            }
+        );
     });
 };

@@ -1,4 +1,5 @@
-// Função para enviar a localização para a API
+import { saveLocations } from "../../database/location";
+
 export const sendLocation = async (latitude, longitude, tag, descricao) => {
     const apiUrl = "http://172.20.10.2:4000/api/location"; // URL da sua API
     try {
@@ -30,10 +31,15 @@ export const sendLocation = async (latitude, longitude, tag, descricao) => {
         const responseBody = await response.json();
         console.log("Resposta da API:", responseBody);
 
-        // Retorna o objeto criado ou algum dado necessário da resposta
+        // Se a resposta for bem-sucedida, retorna o que for necessário
         return responseBody;
     } catch (error) {
-        console.error("Erro ao enviar localização:", error.message);
+        // console.error("Erro ao enviar localização:", error.message);
+
+        // Se o envio falhar, salvar localmente no SQLite
+        saveLocations([{ latitude, longitude, tag, material: descricao, sent: 0 }]);
+
+        // Opcional: Você pode querer tentar enviar novamente mais tarde ou marcar para reenvio
         throw error;
     }
 };
