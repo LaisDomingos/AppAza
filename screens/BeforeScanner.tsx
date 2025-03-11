@@ -3,12 +3,19 @@ import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-na
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
 import Geolocation from '@react-native-community/geolocation';
 import { sendLocation } from '../services/post/location';
+import { resendLocations } from '../functions/Scanner/resendLocation';
+import { getLocations, saveLocations, setupDatabase } from '../database/location';
 
 NfcManager.start();
 
 function BeforeScanner() {
   const [location, setLocation] = useState(null);
 
+  useEffect(() => {
+    setupDatabase();
+    // getLocations();
+    resendLocations();
+  })
   async function readNdef() {
 
     // Chama a função para obter a localização quando o NFC for lido
@@ -44,8 +51,12 @@ function BeforeScanner() {
     Geolocation.getCurrentPosition(
         position => {
           const { latitude, longitude } = position.coords;
-          console.log(latitude, longitude)
-          sendLocation(latitude,longitude, "890123", "Tag One")
+          sendLocation(latitude, longitude, "890190", "Tag Two").catch((error) => {
+            console.warn('Erro ao enviar localização:', error);
+            
+            // Em caso de erro ao enviar a localização, salva localmente
+            saveLocations([{ latitude, longitude, tag: "890190", descricao: "Tag Two", sent: 0 }]);
+          });
         },
         error => {
           console.warn('Erro ao obter localização:', error);

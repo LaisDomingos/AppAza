@@ -37,9 +37,8 @@ export const sendLocation = async (latitude, longitude, tag, descricao) => {
         // console.error("Erro ao enviar localização:", error.message);
 
         // Se o envio falhar, salvar localmente no SQLite
-        saveLocations([{ latitude, longitude, tag, material: descricao, sent: 0 }]);
+        // saveLocations([{ latitude, longitude, tag, descricao, sent: 0 }]);
 
-        // Opcional: Você pode querer tentar enviar novamente mais tarde ou marcar para reenvio
         throw error;
     }
 };

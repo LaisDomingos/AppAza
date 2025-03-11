@@ -2,14 +2,14 @@ import SQLite from 'react-native-sqlite-storage';
 
 const db = SQLite.openDatabase(
     { name: 'transport.db', location: 'default' },
-    () => console.log('Banco de dados aberto'),
+    () => console.log('Banco de dados Location aberto'),
     error => console.error('Erro ao abrir o banco:', error)
 );
 
 export const setupDatabase = () => {
     db.transaction(tx => {
         tx.executeSql(
-            'CREATE TABLE IF NOT EXISTS location (id INTEGER PRIMARY KEY AUTOINCREMENT, latitude TEXT, longitude TEXT, tag TEXT, descricao TEXT, sent INTEGER);',
+            'CREATE TABLE IF NOT EXISTS location (id INTEGER PRIMARY KEY AUTOINCREMENT, latitude INTEGER, longitude INTEGER, tag TEXT, descricao TEXT, sent INTEGER);',
             [], 
             () => console.log('Tabela "location" criada com sucesso ou já existe.'),
             (_, error) => {
@@ -18,17 +18,17 @@ export const setupDatabase = () => {
             }
         );
     });
-};
+}
 
 // Salvar localizações no banco de dados
-export const saveLocations = (locations: { latitude: string; longitude: string; tag: string; material: string; sent: number }[]) => {
+export const saveLocations = (locations: { latitude: number; longitude: number; tag: string; descricao: string; sent: number }[]) => {
     console.log("Salvando as localizações:", locations);  // Console log para ver o que está sendo enviado
     db.transaction(tx => {
         locations.forEach(location => {
             console.log("Enviando para o banco:", location); // Console log para cada local individual
             tx.executeSql(
                 'INSERT INTO location (latitude, longitude, tag, descricao, sent) VALUES (?, ?, ?, ?, ?);',
-                [location.latitude, location.longitude, location.tag, location.material, location.sent]
+                [location.latitude, location.longitude, location.tag, location.descricao, location.sent]
             );
         });
     });
@@ -42,11 +42,11 @@ export const getLocations = (): Promise<any[]> => {
                 'SELECT * FROM location;',
                 [],
                 (_, { rows }) => {
-                    console.log('Localizações armazenadas no SQLite:', rows.raw());
-                    resolve(rows.raw()); // Retorna as localizações quando a consulta terminar
+                    console.log('Localizações armazenados no SQLite:', rows.raw());
+                    resolve(rows.raw()); // Retorna os motoristas quando a consulta terminar
                 },
                 (_, error) => {
-                    console.error('Erro ao buscar localizações:', error);
+                    console.error('Erro ao buscar localização:', error);
                     reject(error); // Retorna um erro, caso ocorra
                     return false;
                 }
@@ -63,12 +63,23 @@ export const getLocationsZero = (): Promise<any[]> => {
                 'SELECT * FROM location WHERE sent = 0;',
                 [],
                 (_, { rows }) => {
-                    console.log('Localizações com senta = 0:', rows.raw());
-                    resolve(rows.raw()); // Retorna os dados filtrados
+                    const results = [];
+
+                    for (let i = 0; i < rows.length; i++) {
+                        results.push(rows.item(i)); // Pega cada item corretamente
+                    }
+
+                    if (results.length === 0) {
+                        console.log("📭 Não há localizações pendentes para envio.");
+                    } else {
+                        console.log('📍 Localizações com sent = 0:', results);
+                    }
+
+                    resolve(results);
                 },
                 (_, error) => {
-                    console.error('Erro ao buscar localizações com senta = 0:', error);
-                    reject(error);
+                    console.error('⚠️ Erro ao buscar localizações com sent = 0:', error);
+                    resolve([]); // Retorna um array vazio em caso de erro
                     return false;
                 }
             );
