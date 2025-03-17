@@ -30,8 +30,7 @@ const Popup: React.FC<PopupProps> = ({
     >
       <View style={styles.overlay}>
         <View style={styles.popup}>
-          <Text style={styles.message}>{message}</Text>
-          <View style={styles.separator} /> {/* Linha separadora */}
+        <Text style={styles.message}>{String(message)}</Text>
           <View style={styles.buttonContainer}>
             <TouchableOpacity onPress={onButton1Press}>
               <Text style={[styles.buttonText, styles.yesText, styles.buttonBorderYes]}>{buttonMessage1}</Text>

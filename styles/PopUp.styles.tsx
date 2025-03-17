@@ -42,10 +42,4 @@ export const styles = StyleSheet.create({
     buttonBorderNo: {
         marginLeft: 10
     },
-    separator: {
-        width: '100%',
-        height: 1,
-        backgroundColor: 'white', // Cor da linha
-        marginVertical: 10, // Espaçamento ao redor da linha
-    },
 });

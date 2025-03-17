@@ -2,15 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
 import Geolocation from '@react-native-community/geolocation';
-<<<<<<< HEAD
-import { styles } from '../styles/Scanner.styles';
-import { sendLocationToApi } from '../services/post/location';
-=======
+
 import { sendLocation } from '../services/post/location';
 import { resendLocations } from '../functions/Scanner/resendLocation';
 import { getLocations, saveLocations, setupDatabase } from '../database/location';
+import { styles } from '../styles/Scanner.styles';
 
->>>>>>> b07abd4bbade608f1284c3bf1d9fbc46e18be652
+
 NfcManager.start();
 
 function BeforeScanner() {
@@ -25,8 +23,8 @@ function BeforeScanner() {
 
     // Chama a função para obter a localização quando o NFC for lido
     getLocation();
-    
-    sendLocationToApi("5666","longitude","45678", "desc1")
+
+    sendLocation("5666", "longitude", "45678", "desc1")
     try {
       console.log('Tentando ler tag...');
 
@@ -56,42 +54,26 @@ function BeforeScanner() {
   // Função separada para pegar a geolocalização
   function getLocation() {
     Geolocation.getCurrentPosition(
-<<<<<<< HEAD
+
       position => {
         const { latitude, longitude } = position.coords;
-        console.log('Localização:', latitude, longitude);
+        sendLocation(latitude, longitude, "890190", "Tag Two").catch((error) => {
+          console.warn('Erro ao enviar localização:', error);
+
+          // Em caso de erro ao enviar a localização, salva localmente
+          saveLocations([{ latitude, longitude, tag: "890190", descricao: "Tag Two", sent: 0 }]);
+        });
       },
       error => {
         console.warn('Erro ao obter localização:', error);
         Alert.alert('Erro', 'Não foi possível obter a localização.');
       },
       {
-        enableHighAccuracy: true,
+        enableHighAccuracy: false,
         timeout: 15000,
         maximumAge: 10000,
       }
     );
-=======
-        position => {
-          const { latitude, longitude } = position.coords;
-          sendLocation(latitude, longitude, "890190", "Tag Two").catch((error) => {
-            console.warn('Erro ao enviar localização:', error);
-            
-            // Em caso de erro ao enviar a localização, salva localmente
-            saveLocations([{ latitude, longitude, tag: "890190", descricao: "Tag Two", sent: 0 }]);
-          });
-        },
-        error => {
-          console.warn('Erro ao obter localização:', error);
-          Alert.alert('Erro', 'Não foi possível obter a localização.');
-        },
-        {
-          enableHighAccuracy: false,
-          timeout: 15000,
-          maximumAge: 10000,
-        }
-      );
->>>>>>> b07abd4bbade608f1284c3bf1d9fbc46e18be652
   }
 
 
@@ -113,7 +95,5 @@ function BeforeScanner() {
     </View>
   );
 }
-
-
 
 export default BeforeScanner;
