@@ -2,15 +2,15 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
     container: {
-        flexGrow: 1,
-        backgroundColor: '#F1F1F1',
-        alignItems: 'center',
-        justifyContent: 'center',
+        flex: 1,
+        backgroundColor: '#f0f4f8',
         padding: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     logo: {
-        width: 150,
-        height: 150,
+        width: 200,
+        height: 200,
         marginBottom: 20,
     },
     inputContainer: {

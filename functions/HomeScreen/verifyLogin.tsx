@@ -18,7 +18,7 @@ export const fetchToken = async (navigation: any, setToken: any) => {
     const diffInMinutes = (now.getTime() - loginDate.getTime()) / (1000 * 60); // Diferença em minutos
 
     if (diffInMinutes > 2) {
-      saveDataAsync('remove', '', 0); // Remove os dados do AsyncStorage
+      saveDataAsync('remove', '', 0, '',''); // Remove os dados do AsyncStorage
       setToken(null); // Remove o token do estado também
     } else {
       // Navega para a página DestinationPoint, passando os dados necessários

@@ -3,9 +3,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export async function saveDataAsync(
     request: string,
     token: string,
-    truck_id: number) {
+    truck_id: number,
+    nome: string,
+    patente: string) {
     const loginTime = new Date().toISOString(); // Pega o momento atual em formato ISO
     if (request === 'post') {
+        // Armazenar o nome
+        await AsyncStorage.setItem('name', nome);
+        // Armazenar a patente
+        await AsyncStorage.setItem('patente', patente);
         // Armazenar o token
         await AsyncStorage.setItem('auth_token', token);
         // Armazenar o horário do login
@@ -13,6 +19,10 @@ export async function saveDataAsync(
         // Armazenar o truck_id como string
         await AsyncStorage.setItem('truck_id', truck_id.toString());
     } else if (request === 'remove') {
+        // Remove o nome
+        await AsyncStorage.removeItem('name');
+        // Remove a patente
+        await AsyncStorage.removeItem('patente');
         // Remove o token
         await AsyncStorage.removeItem('auth_token');
         // Remove o horário do login

@@ -32,10 +32,6 @@ export const loadData = async (setMotoristas: React.Dispatch<React.SetStateActio
     setMotoristas(drivers);
     setPatentesFetch(trucks.map((truck: any) => truck.plate));
 
-    // Salvar os novos dados localmente
-    await AsyncStorage.setItem('drivers', JSON.stringify(drivers));
-    await AsyncStorage.setItem('trucks', JSON.stringify(trucks.map((truck: any) => truck.plate)));
-    await AsyncStorage.setItem('truck_brand', JSON.stringify(trucks.map((truck: any) => truck.brand)));
   } catch (error) {
     console.error('Erro ao buscar dados da API:', error);
 

@@ -9,10 +9,16 @@ const db = SQLite.openDatabase(
 export const setupDatabase = () => {
     db.transaction(tx => {
         tx.executeSql(
-            'CREATE TABLE IF NOT EXISTS location (latitude TEXT, longitude TEXT, tag TEXT, descricao TEXT);',
+            `CREATE TABLE IF NOT EXISTS location (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                latitude TEXT,
+                longitude TEXT,
+                tag TEXT,
+                descricao TEXT,
+                sent INTEGER DEFAULT 0
+            );`,
             [],
-            // () => console.log('Tabela "location" criada com sucesso ou já existe.'),
-            () => {},
+            () => console.log('Tabela "location" criada com sucesso ou já existe.'),
             (_, error) => {
                 console.error('Erro ao criar a tabela "location":', error);
                 return false;
@@ -22,12 +28,12 @@ export const setupDatabase = () => {
 };
 
 // Salvar localizações no banco de dados
-export const saveLocations = (locations: { latitude: string; longitude: string; tag: string; material: string }[]) => {
+export const saveLocations = (locations: { latitude: string; longitude: string; tag: string; material: string; senta: number }[]) => {
     db.transaction(tx => {
         locations.forEach(location => {
             tx.executeSql(
-                'INSERT INTO location (latitude, longitude, tag, descricao) VALUES (?, ?, ?, ?);',
-                [location.latitude, location.longitude, location.tag, location.material]
+                'INSERT INTO location (latitude, longitude, tag, descricao, sent) VALUES (?, ?, ?, ?, ?);',
+                [location.latitude, location.longitude, location.tag, location.material, location.senta]
             );
         });
     });
@@ -51,5 +57,42 @@ export const getLocations = (): Promise<any[]> => {
                 }
             );
         });
+    });
+};
+
+export const getLocationsZero = (): Promise<any[]> => {
+    return new Promise((resolve, reject) => {
+        db.transaction(tx => {
+            tx.executeSql(
+                'SELECT * FROM location WHERE senta = 0;',
+                [],
+                (_, { rows }) => {
+                    console.log('Localizações com senta = 0:', rows.raw());
+                    resolve(rows.raw()); // Retorna os dados filtrados
+                },
+                (_, error) => {
+                    console.error('Erro ao buscar localizações com senta = 0:', error);
+                    reject(error);
+                    return false;
+                }
+            );
+        });
+    });
+};
+
+// Atualiza o campo 'senta' para 1 com base no id
+export const updateSentStatus = (id: number) => {
+    db.transaction(tx => {
+        tx.executeSql(
+            'UPDATE location SET sent = 1 WHERE id = ?;',
+            [id],
+            (_, result) => {
+                console.log(`Localização com id ${id} atualizada com sucesso.`);
+            },
+            (_, error) => {
+                console.error('Erro ao atualizar localização:', error);
+                return false;
+            }
+        );
     });
 };

@@ -1,7 +1,6 @@
 import { insertData } from '../../database/sqliteDatabase';
 import { fetchLogin } from '../../services/post/login';
 import { Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { saveDataAsync } from './saveDataAsync';
 
 export const handleLogin = async (
@@ -57,11 +56,10 @@ export const handleLogin = async (
     navigation.navigate('DestinationPoint', {
       truck_id: id // Passa o ID do caminhão
     });
-    saveDataAsync('post', loginResponse, id);
+    saveDataAsync('post', loginResponse, id, nome, patente);
   } catch (error) {
     // Exibe a mensagem de erro se falhar no login
     if (error instanceof Error) {
-      console.log("ERROOOOOOOOO: ", error.message)
       if (error.message === "Network request failed"){
         setErro('Sin internet no es posible iniciar sesión');
       }

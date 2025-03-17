@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
 import Geolocation from '@react-native-community/geolocation';
-
+import { styles } from '../styles/Scanner.styles';
+import { sendLocationToApi } from '../services/post/location';
 NfcManager.start();
 
 function BeforeScanner() {
@@ -28,6 +29,8 @@ function BeforeScanner() {
 
     // Chama a função para obter a localização quando o NFC for lido
     getLocation();
+    
+    sendLocationToApi("5666","longitude","45678", "desc1")
     try {
       console.log('Tentando ler tag...');
 
@@ -56,22 +59,24 @@ function BeforeScanner() {
 
   // Função separada para pegar a geolocalização
   function getLocation() {
-   Geolocation.getCurrentPosition(
-       position => {
-         const { latitude, longitude } = position.coords;
-         console.log('Localização:', latitude, longitude);
-       },
-       error => {
-         console.warn('Erro ao obter localização:', error);
-         Alert.alert('Erro', 'Não foi possível obter a localização.');
-       },
-       {
-         enableHighAccuracy: true,
-         timeout: 15000,
-         maximumAge: 10000,
-       }
-     );
+    Geolocation.getCurrentPosition(
+      position => {
+        const { latitude, longitude } = position.coords;
+        console.log('Localização:', latitude, longitude);
+      },
+      error => {
+        console.warn('Erro ao obter localização:', error);
+        Alert.alert('Erro', 'Não foi possível obter a localização.');
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 10000,
+      }
+    );
   }
+
+
 
   return (
     <View style={styles.wrapper}>
@@ -91,45 +96,6 @@ function BeforeScanner() {
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f8f9fa',
-  },
-  iconContainer: {
-    marginBottom: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  phoneImage: {
-    width: 200,
-    height: 200,
-    resizeMode: 'contain',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: '#0066cc',
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 5,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-});
+
 
 export default BeforeScanner;

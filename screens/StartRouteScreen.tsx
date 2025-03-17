@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../styles/StartRouteScreen.styles';
+import UserHeader from '../components/userHeader';
 
 export type RootStackParamList = {
   StartRoute: undefined;
@@ -18,52 +19,73 @@ type Props = {
 };
 
 export default function StartRouteScreen({ navigation, route }: Props) {
-  const { truck_id } = route.params;
+  const [name, setName] = useState<string | null>(null);
+  const [patente, setPatente] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const nameAsync = await AsyncStorage.getItem('name');
+        const patenteAsync = await AsyncStorage.getItem('patente');
+        if (nameAsync) setName(nameAsync);
+        if (patenteAsync) setPatente(patenteAsync);
+      } catch (error) {
+        console.error('Erro ao recuperar dados do AsyncStorage', error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleStartRoute = () => {
-    navigation.navigate('Scanner', {
+    /*navigation.navigate('Scanner', {
       truck_id: truck_id
-    });
-    // navigation.navigate('BeforeScanner')
+    // })*/
+    navigation.navigate('BeforeScanner')
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={require('../assets/logo.png')} style={styles.logo} />
-      <Text style={styles.title}>Inicio del trayecto</Text>
-
-      <View style={styles.progressContainer}>
-        <View style={[styles.progressBar, { width: '50%' }]} />
+    <>
+      <View>
+        <UserHeader name={name} patente={patente} navigation={navigation} />
       </View>
+      <View style={styles.container}>
+        <Image source={require('../assets/logo.png')} style={styles.logo} />
+        <Text style={styles.title}>Inicio del trayecto</Text>
 
-      <View style={styles.pointsContainer}>
-        <View style={styles.point}>
-          <Image
-            source={require('../assets/location.png')}
-            style={styles.locationIcon}
-          />
-          <Text style={styles.pointText}>Inicio</Text>
+        <View style={styles.progressContainer}>
+          <View style={[styles.progressBar, { width: '50%' }]} />
         </View>
 
-        <View style={styles.point}>
-          <Image
-            source={require('../assets/truck.png')}
-            style={styles.truckImage}
-          />
+        <View style={styles.pointsContainer}>
+          <View style={styles.point}>
+            <Image
+              source={require('../assets/location.png')}
+              style={styles.locationIcon}
+            />
+            <Text style={styles.pointText}>Inicio</Text>
+          </View>
+
+          <View style={styles.point}>
+            <Image
+              source={require('../assets/truck.png')}
+              style={styles.truckImage}
+            />
+          </View>
+
+          <View style={styles.point}>
+            <Image
+              source={require('../assets/location.png')}
+              style={styles.locationIcon}
+            />
+            <Text style={styles.pointText}>Fin</Text>
+          </View>
         </View>
 
-        <View style={styles.point}>
-          <Image
-            source={require('../assets/location.png')}
-            style={styles.locationIcon}
-          />
-          <Text style={styles.pointText}>Fin</Text>
-        </View>
+        <TouchableOpacity style={styles.button} onPress={handleStartRoute}>
+          <Text style={styles.buttonText}>Escáner</Text>
+        </TouchableOpacity>
       </View>
-
-      <TouchableOpacity style={styles.button} onPress={handleStartRoute}>
-        <Text style={styles.buttonText}>Escáner</Text>
-      </TouchableOpacity>
-    </View>
+    </>
   );
 }
