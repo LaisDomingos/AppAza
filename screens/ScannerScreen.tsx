@@ -1,56 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, Alert } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import NfcManager, { NfcTech } from 'react-native-nfc-manager';
 
+import { resendLocations } from '../functions/Scanner/resendLocation';
 import { setupDatabase } from '../database/location';
-import { styles } from '../styles/ScannerScreen';
+import { styles } from '../styles/Scanner.styles';
+import { readNFC } from '../functions/Scanner/readNFC';
 
-import { getLocationScan } from '../functions/ScannerScreen/getLocationScan';
-import { readNfc } from '../functions/ScannerScreen/readNfc';
+NfcManager.start();
 
-export type RootStackParamList = {
-  Scanner: undefined;
-  StartRoute: { truck_id: number };
-};
+function ScannerScreen() {
 
-type ScannerScreenNavigationProp = StackNavigationProp<RootStackParamList, 'StartRoute'>;
-
-type Props = {
-  navigation: ScannerScreenNavigationProp;
-  route: any;
-};
-
-const tags = [
-  '2fnoou7igp2gh7h3',
-  'xg8yuklldnx7ez6f',
-  'fyau3gdxxsos9h3m',
-  '2gyvmjgbb4g1u5nl',
-  'wxkzfyq5blznmkcn',
-  'nekqafsjasvq5r0s'
-];
-
-export default function ScannerScreen({ navigation, route }: Props) {
-  const { truck_id } = route.params;
-  const [scanCount, setScanCount] = useState(0);
-  // Carrega o contador salvo ao iniciar
   useEffect(() => {
-    console.log("page scanner")
     setupDatabase();
-    const loadScanCount = async () => {
-      const savedCount = await AsyncStorage.getItem('scanCount');
-      if (savedCount) {
-        setScanCount(parseInt(savedCount, 10));
-      }
-    };
-    loadScanCount();
+    resendLocations();
+  })
 
-  }, []);
-
-  async function handleGetLocationScanPress() {
-    await getLocationScan(() => readNfc(scanCount, setScanCount, truck_id, navigation)); 
-  }
-  
   return (
     <View style={styles.wrapper}>
       <View style={styles.iconContainer}>
@@ -60,16 +25,13 @@ export default function ScannerScreen({ navigation, route }: Props) {
         />
       </View>
 
-      <Text style={styles.title}>Escáner NFC</Text>
+      <Text style={styles.title}>NFC Scanner</Text>
 
-      <TouchableOpacity style={styles.button} onPress={handleGetLocationScanPress}>
-        <Text style={styles.buttonText}>
-          {scanCount === 0 && 'Escanear material'}
-          {scanCount === 1 && 'Escanear portal radioativo'}
-          {scanCount >= 2 && 'Escanear pesagem'}
-        </Text>
+      <TouchableOpacity style={styles.button} onPress={readNFC}>
+        <Text style={styles.buttonText}>Scan a Tag</Text>
       </TouchableOpacity>
-
     </View>
   );
 }
+
+export default ScannerScreen;

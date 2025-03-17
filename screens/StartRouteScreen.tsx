@@ -7,8 +7,7 @@ import UserHeader from '../components/userHeader';
 
 export type RootStackParamList = {
   StartRoute: undefined;
-  Scanner: { truck_id: number };
-  BeforeScanner: undefined;
+  Scanner: undefined;
 };
 
 type StartRouteScreenNavigationProp = StackNavigationProp<RootStackParamList, 'StartRoute'>;
@@ -21,6 +20,7 @@ type Props = {
 export default function StartRouteScreen({ navigation, route }: Props) {
   const [name, setName] = useState<string | null>(null);
   const [patente, setPatente] = useState<string | null>(null);
+  const [destinoAt, setDestinoAt] = useState<string>("Material");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,11 +38,7 @@ export default function StartRouteScreen({ navigation, route }: Props) {
   }, []);
 
   const handleStartRoute = () => {
-    /*navigation.navigate('Scanner', {
-      truck_id: truck_id
-    });*/
-
-    navigation.navigate('BeforeScanner')
+    navigation.navigate('Scanner')
   };
 
   return (
@@ -79,7 +75,7 @@ export default function StartRouteScreen({ navigation, route }: Props) {
               source={require('../assets/location.png')}
               style={styles.locationIcon}
             />
-            <Text style={styles.pointText}>Fin</Text>
+            <Text style={styles.pointText}>{destinoAt}</Text>
           </View>
         </View>
 

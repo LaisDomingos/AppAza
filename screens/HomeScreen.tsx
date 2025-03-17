@@ -7,7 +7,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // Importa
 import { getPendingData } from '../database/sqliteDatabase';
 import { handleLogin } from '../functions/HomeScreen/login';
 import { loadData } from '../functions/HomeScreen/loadData';
-import { changeScanCount } from '../functions/HomeScreen/changeScanCount';
 import { styles } from '../styles/HomeScreen.styles';
 import { saveDataAsync } from '../functions/HomeScreen/saveDataAsync';
 import { fetchToken } from '../functions/HomeScreen/verifyLogin';
@@ -47,7 +46,6 @@ export default function HomeScreen({ navigation }: Props) {
   useEffect(() => {
     getDrivers();
     getPendingData();
-    changeScanCount();
     loadData(
       setMotoristas,
       setPatentesFetch,

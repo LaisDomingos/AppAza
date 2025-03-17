@@ -6,9 +6,8 @@ import { NetInfoProvider } from './contexts/NetInfoContext.tsx';  // Importando 
 import HomeScreen from './screens/HomeScreen'; // Tela inicial
 import LoadingScreen from './screens/LoadingScreen'; // Tela de carregamento
 import DestinationPointScreen from './screens/DestinationPointScreen';
-import ScannerScreen from './screens/ScannerScreen';
+import ScannerScreen from './screens/ScannerScreen.tsx';
 import StartRouteSreen from './screens/StartRouteScreen';
-import BeforeScanner from './screens/BeforeScanner.tsx';
 
 const Stack = createStackNavigator();
 
@@ -57,11 +56,6 @@ function App() {
           <Stack.Screen
             name="StartRoute"
             component={StartRouteSreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="BeforeScanner"
-            component={BeforeScanner}
             options={{ headerShown: false }}
           />
         </Stack.Navigator>
