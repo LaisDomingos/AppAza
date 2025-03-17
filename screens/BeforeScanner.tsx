@@ -2,29 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
 import Geolocation from '@react-native-community/geolocation';
+<<<<<<< HEAD
 import { styles } from '../styles/Scanner.styles';
 import { sendLocationToApi } from '../services/post/location';
+=======
+import { sendLocation } from '../services/post/location';
+import { resendLocations } from '../functions/Scanner/resendLocation';
+import { getLocations, saveLocations, setupDatabase } from '../database/location';
+
+>>>>>>> b07abd4bbade608f1284c3bf1d9fbc46e18be652
 NfcManager.start();
 
 function BeforeScanner() {
   const [location, setLocation] = useState(null);
 
   useEffect(() => {
-    async function checkNFC() {
-      const isSupported = await NfcManager.isSupported();
-      console.log('NFC Suportado:', isSupported);
-
-      const isEnabled = await NfcManager.isEnabled();
-      console.log('NFC Ativado:', isEnabled);
-
-      if (!isEnabled) {
-        Alert.alert('Atenção', 'O NFC está desligado');
-      }
-    }
-
-    checkNFC();
-  }, []);
-
+    setupDatabase();
+    // getLocations();
+    resendLocations();
+  })
   async function readNdef() {
 
     // Chama a função para obter a localização quando o NFC for lido
@@ -60,6 +56,7 @@ function BeforeScanner() {
   // Função separada para pegar a geolocalização
   function getLocation() {
     Geolocation.getCurrentPosition(
+<<<<<<< HEAD
       position => {
         const { latitude, longitude } = position.coords;
         console.log('Localização:', latitude, longitude);
@@ -74,6 +71,27 @@ function BeforeScanner() {
         maximumAge: 10000,
       }
     );
+=======
+        position => {
+          const { latitude, longitude } = position.coords;
+          sendLocation(latitude, longitude, "890190", "Tag Two").catch((error) => {
+            console.warn('Erro ao enviar localização:', error);
+            
+            // Em caso de erro ao enviar a localização, salva localmente
+            saveLocations([{ latitude, longitude, tag: "890190", descricao: "Tag Two", sent: 0 }]);
+          });
+        },
+        error => {
+          console.warn('Erro ao obter localização:', error);
+          Alert.alert('Erro', 'Não foi possível obter a localização.');
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 15000,
+          maximumAge: 10000,
+        }
+      );
+>>>>>>> b07abd4bbade608f1284c3bf1d9fbc46e18be652
   }
 
 
@@ -89,7 +107,7 @@ function BeforeScanner() {
 
       <Text style={styles.title}>NFC Scanner</Text>
 
-      <TouchableOpacity style={styles.button} onPress={readNdef}>
+      <TouchableOpacity style={styles.button} onPress={getLocation}>
         <Text style={styles.buttonText}>Scan a Tag</Text>
       </TouchableOpacity>
     </View>

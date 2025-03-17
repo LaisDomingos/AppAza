@@ -40,7 +40,11 @@ export default function StartRouteScreen({ navigation, route }: Props) {
   const handleStartRoute = () => {
     /*navigation.navigate('Scanner', {
       truck_id: truck_id
+<<<<<<< HEAD
     // })*/
+=======
+    });*/
+>>>>>>> b07abd4bbade608f1284c3bf1d9fbc46e18be652
     navigation.navigate('BeforeScanner')
   };
 
