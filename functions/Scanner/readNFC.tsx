@@ -6,7 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 // Definindo as etapas possíveis
 const ETAPAS = {
   MATERIAL: 'MATERIAL',
-  PORTAL_RADIOATIVO: 'PORTAL',
+  PORTAL: 'PORTAL',
   PESAGEM: 'PESAGEM',
   P_DESCARGA: 'P_DESCARGA',
 };
@@ -14,20 +14,11 @@ const ETAPAS = {
 // Função para obter a etapa salva no AsyncStorage
 const obterEtapaSalva = async (): Promise<string | null> => {
   try {
-    const etapa = await AsyncStorage.getItem("etapaAtual");
+    const etapa = await AsyncStorage.getItem("currentStep");
     return etapa;
   } catch (error) {
     console.error("Erro ao obter etapa salva:", error);
     return null;
-  }
-};
-
-// Função para salvar a etapa no AsyncStorage
-const salvarEtapa = async (etapa: string): Promise<void> => {
-  try {
-    await AsyncStorage.setItem("etapaAtual", etapa);
-  } catch (error) {
-    console.error("Erro ao salvar etapa:", error);
   }
 };
 
@@ -39,7 +30,7 @@ export const readNFC = async (): Promise<void> => {
     console.log("Tentando ler tag...");
 
     // SIMULAÇÃO MANUAL: Número do cartão (RFID) lido manualmente
-    const cardNumber = "RFID128";
+    const cardNumber = "RFID123";
 
     // Busca os dados da tag no backend
     const truckData = await fetchTruckByTag(cardNumber);
@@ -61,16 +52,16 @@ export const readNFC = async (): Promise<void> => {
       // Aqui você pode salvar a próxima etapa no AsyncStorage
       if (etapaAtual === ETAPAS.MATERIAL) {
         console.log("salva o material lido")
-        await AsyncStorage.setItem("etapaAtual", ETAPAS.PORTAL_RADIOATIVO);
-      } else if (etapaAtual === ETAPAS.PORTAL_RADIOATIVO) {
+        await AsyncStorage.setItem("currentStep", ETAPAS.PORTAL);
+      } else if (etapaAtual === ETAPAS.PORTAL) {
         console.log("passa o portal radioativo para true e tenta enviar os dados")
-        await AsyncStorage.setItem("etapaAtual", ETAPAS.PESAGEM);
+        await AsyncStorage.setItem("currentStep", ETAPAS.PESAGEM);
       } else if (etapaAtual === ETAPAS.PESAGEM) {
         console.log("tenta enviar os dados faltante, se não for deve avisar")
-        await AsyncStorage.setItem("etapaAtual", ETAPAS.P_DESCARGA);
+        await AsyncStorage.setItem("currentStep", ETAPAS.P_DESCARGA);
       } else {
         console.log("confere se o destino lê corretamente")
-        await AsyncStorage.removeItem("etapaAtual");
+        await AsyncStorage.removeItem("currentStep");
       }
 
     } else {
@@ -84,8 +75,6 @@ export const readNFC = async (): Promise<void> => {
     Alert.alert("Erro", "Ocorreu um erro ao tentar ler a tag NFC.");
   }
 };
-
-
 
 /*export const readNFC = async (): Promise<void> => {
   getLocation(); // Chama a função para obter a localização

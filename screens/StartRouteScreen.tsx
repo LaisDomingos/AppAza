@@ -4,6 +4,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '../styles/StartRouteScreen.styles';
 import UserHeader from '../components/userHeader';
+import { useFocusEffect } from '@react-navigation/native';
 
 export type RootStackParamList = {
   StartRoute: undefined;
@@ -22,21 +23,42 @@ export default function StartRouteScreen({ navigation, route }: Props) {
   const [patente, setPatente] = useState<string | null>(null);
   const [destinoAt, setDestinoAt] = useState<string>("Material");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const nameAsync = await AsyncStorage.getItem('name');
-        const patenteAsync = await AsyncStorage.getItem('patente');
-        if (nameAsync) setName(nameAsync);
-        if (patenteAsync) setPatente(patenteAsync);
-      } catch (error) {
-        console.error('Erro ao recuperar dados do AsyncStorage', error);
+  const fetchData = async () => {
+    try {
+      // Recuperando os dados do AsyncStorage
+      const nameAsync = await AsyncStorage.getItem('name');
+      const patenteAsync = await AsyncStorage.getItem('patente');
+      const currentStepAsync = await AsyncStorage.getItem('currentStep'); // Adicionando recuperação do currentStep
+      console.log("etapa: ", currentStepAsync)
+  
+      if (nameAsync) setName(nameAsync);
+      if (patenteAsync) setPatente(patenteAsync);
+      
+      if (currentStepAsync) {
+        // Verificando o valor de currentStep e atualizando destinoAt
+        if (currentStepAsync === 'PESAGEM') {
+          setDestinoAt('ROMANA');
+        } else if (currentStepAsync === 'P_DESCARGA') {
+          setDestinoAt('P.DESCARGA');
+        } else if (currentStepAsync === 'PORTAL') {
+          setDestinoAt('P.RADIACTIVO');
+        } else {
+          setDestinoAt(currentStepAsync); // Caso o valor não corresponda a nenhum dos casos
+        }
       }
-    };
+  
+    } catch (error) {
+      console.error('Erro ao recuperar dados do AsyncStorage', error);
+    }
+  };
+  
 
-    fetchData();
-  }, []);
-
+  // Usando useFocusEffect para garantir que a função fetchData seja chamada sempre que a página for aberta
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData(); // Chama a função sempre que a página for aberta
+    }, [])
+  );
   const handleStartRoute = () => {
     navigation.navigate('Scanner')
   };
