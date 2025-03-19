@@ -6,8 +6,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { styles } from '../styles/DestinationPointScreen.styles';
 import { loadData } from '../functions/DestinationPointScreen/loadData';
 import { handleStart } from '../functions/DestinationPointScreen/handleStart';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserHeader from '../components/userHeader';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type RootStackParamList = {
   DestinationPoint: undefined;
@@ -22,39 +22,40 @@ type Props = {
 };
 
 export default function DestinationPoint({ navigation, route }: Props) {
-  const { truck_id } = route.params;
   const [selectedSetor, setSelectedSetor] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [setores, setSetores] = useState<string[]>([]);
-  const [name, setName] = useState<string | null>(null);
+  const [nome, setNome] = useState<string | null>(null);
   const [patente, setPatente] = useState<string | null>(null);
+  const [truckBrand, setTruckBrand] = useState<string | null>(null);
+  const [rut, setRut] = useState<string | null>(null);
+
+  const loadNamePatente = async () => {
+    try {
+      const nameAsync = await AsyncStorage.getItem('name');
+      const patenteAsync = await AsyncStorage.getItem('patente');
+      const truckBrandAsync = await AsyncStorage.getItem('truckBrand')
+      const rutAsync = await AsyncStorage.getItem('rut')
+      setNome(nameAsync || "");
+      setPatente(patenteAsync || "");
+      setTruckBrand(truckBrandAsync || "");
+      setRut(rutAsync || "");
+    } catch (error) {
+      console.error("Erro ao carregar nome e patente:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const nameAsync = await AsyncStorage.getItem('name');
-        const patenteAsync = await AsyncStorage.getItem('patente');
-        if (nameAsync) setName(nameAsync);
-        if (patenteAsync) setPatente(patenteAsync);
-      } catch (error) {
-        console.error('Erro ao recuperar dados do AsyncStorage', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
+    loadNamePatente();
     loadData().then((setoresData) => {
       setSetores(setoresData); // Chama a função e atualiza o estado
     });
-
   }, []);
 
   return (
     <>
       <View>
-        <UserHeader name={name} patente={patente} navigation={navigation} />
+        <UserHeader name={nome} patente={patente} navigation={navigation} />
       </View>
 
       <ScrollView contentContainerStyle={styles.container}>
@@ -91,7 +92,11 @@ export default function DestinationPoint({ navigation, route }: Props) {
           />
         </View>
         {errorMessage && <Text style={styles.errorText}>{errorMessage}</Text>}
-        <TouchableOpacity style={styles.button} onPress={() => handleStart(selectedSetor, truck_id, setErrorMessage, navigation)} >
+        <TouchableOpacity style={styles.button} onPress={() => {
+          if (truckBrand && patente && nome && rut) {
+            handleStart(truckBrand, patente, rut, nome, selectedSetor, setErrorMessage, navigation);
+          }
+        }} >
           <Text style={styles.buttonText}>Iniciar</Text>
         </TouchableOpacity>
       </ScrollView>

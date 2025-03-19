@@ -80,26 +80,45 @@ const insertData = (
   truck_brand: string,
   plate: string,
   driver_rut: string,
-  driver_name: string
+  driver_name: string,
+  destination_location_code: string,
+  destination_location_name: string
 ): Promise<number> => {
   return new Promise((resolve, reject) => {
     db.transaction((tx: Transaction) => {
       const dateTime = new Date().toISOString();
+      
+      // Log dos dados antes da inserção
+      console.log("📤 Dados enviados para inserção:");
+      console.log({
+        unidad,
+        supplier_name,
+        supplier_rut,
+        truck_brand,
+        plate,
+        date_time: dateTime,
+        driver_rut,
+        driver_name,
+        destination_location_code,
+        destination_location_name,
+      });
+
       tx.executeSql(
-        'INSERT INTO trucks (unidad, supplier_name, supplier_rut, truck_brand, plate, date_time, driver_rut, driver_name,sent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)',
-        [unidad, supplier_name, supplier_rut, truck_brand, plate, dateTime, driver_rut, driver_name],
+        'INSERT INTO trucks (unidad, supplier_name, supplier_rut, truck_brand, plate, date_time, driver_rut, driver_name, destination_location_code, destination_location_name, sent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)',
+        [unidad, supplier_name, supplier_rut, truck_brand, plate, dateTime, driver_rut, driver_name, destination_location_code, destination_location_name],
         (_, result) => {
-          // Retorna o insertId do resultado
+          console.log("✅ Dados inseridos com sucesso! ID do caminhão:", result.insertId);
           resolve(result.insertId);
         },
         (error: any) => {
-          console.log('Erro ao inserir dados: ', error);
+          console.log("❌ Erro ao inserir dados: ", error);
           reject(error);
         }
       );
     });
   });
 };
+
 
 //Atualizar destination_location_code e destination_location_name
 const updateDestinationLocation = (id: number, code: string, name: string): void => {

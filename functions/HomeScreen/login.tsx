@@ -2,6 +2,7 @@ import { insertData } from '../../database/sqliteDatabase';
 import { fetchLogin } from '../../services/post/login';
 import { Alert } from 'react-native';
 import { saveDataAsync } from './saveDataAsync';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const handleLogin = async (
   nome: string,
@@ -37,30 +38,22 @@ export const handleLogin = async (
     const loginResponse = await fetchLogin(driverId, rut);
     // Obter a marca diretamente de truckBrands
     const selectedTruckBrand = truckBrands[patente] || '';
-    
-    // Insere os dados no banco
-    const id = await insertData(
-      "1111 - AZA Colina", 
-      "TRANSPORTES LMORA LTDA", 
-      "8000032", 
-      selectedTruckBrand, 
-      patente, 
-      rut, 
-      nome
-    );
 
     // Limpa o erro e navega para a próxima tela
     setErro(''); // Limpa os erros
-     
+
     // Navega para a página DestinationPoint, passando os dados necessários
-    navigation.navigate('DestinationPoint', {
-      truck_id: id // Passa o ID do caminhão
-    });
-    saveDataAsync('post', loginResponse, id, nome, patente);
+    navigation.navigate('DestinationPoint');
+
+    await AsyncStorage.setItem('truckBrand', selectedTruckBrand) // Armazena o rut
+    await AsyncStorage.setItem('rut', rut); // Armazena o nome
+    await AsyncStorage.setItem('name', nome); // Armazena o nome
+    await AsyncStorage.setItem('patente', patente); // Armazena a patente
+    await AsyncStorage.setItem('auth_token', loginResponse); // Armazenar o token
   } catch (error) {
     // Exibe a mensagem de erro se falhar no login
     if (error instanceof Error) {
-      if (error.message === "Network request failed"){
+      if (error.message === "Network request failed") {
         setErro('Sin internet no es posible iniciar sesión');
       }
     } else {

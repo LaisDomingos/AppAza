@@ -2,7 +2,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export async function saveDataAsync(
     request: string,
-    token: string,
     truck_id: number,
     nome: string,
     patente: string) {
@@ -12,8 +11,6 @@ export async function saveDataAsync(
         await AsyncStorage.setItem('name', nome);
         // Armazenar a patente
         await AsyncStorage.setItem('patente', patente);
-        // Armazenar o token
-        await AsyncStorage.setItem('auth_token', token);
         // Armazenar o horário do login
         await AsyncStorage.setItem('loginTime', loginTime);
         // Armazenar o truck_id como string

@@ -4,7 +4,7 @@ import { styles } from '../styles/PopUp.styles';
 import { deleteTruck } from '../database/sqliteDatabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-type PopupProps = {
+type PopupPropsJustify = {
   visible: boolean;
   message: string;
   buttonMessage1: string;
@@ -13,9 +13,10 @@ type PopupProps = {
   onButton2Press: () => void;
   onClose: () => void;
   truck_id: number;
+  navigation: any
 };
 
-const PopupJustify: React.FC<PopupProps> = ({
+const PopupJustify: React.FC<PopupPropsJustify> = ({
   visible,
   message,
   buttonMessage1,
@@ -23,7 +24,8 @@ const PopupJustify: React.FC<PopupProps> = ({
   onButton1Press,
   onButton2Press,
   onClose,
-  truck_id
+  truck_id,
+  navigation
 }) => {
   const [inputValue, setInputValue] = useState('');
 
@@ -37,7 +39,11 @@ const PopupJustify: React.FC<PopupProps> = ({
     console.log("depois do input: ", truck_id)
     deleteTruck(truck_id)
     await AsyncStorage.removeItem("currentStep");
+    await AsyncStorage.removeItem("truck_id");
     Alert.alert("Éxito", "¡El viaje ha sido finalizado con éxito!");
+    navigation.navigate('DestinationPoint', {
+      truck_id: truck_id // Passa o ID do caminhão
+    });
     // Fecha o pop-up após o botão "OK" ser pressionado
     onClose();
   };

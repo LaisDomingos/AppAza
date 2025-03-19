@@ -73,6 +73,7 @@ function ScannerScreen({ navigation, route }: Props) {
         onButton2Press={closePopup}
         onClose={closePopup}
         truck_id={truck_id}
+        navigation={navigation}
       />
     </>
   );
