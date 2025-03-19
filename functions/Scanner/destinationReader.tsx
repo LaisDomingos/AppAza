@@ -15,14 +15,14 @@ export const destinationReader = async (truck_id: number, descricao: string, sho
     // Compara o destino com a descrição
     if (dataID[0]?.destination_location_name === descricao) {
       // Se o destino for correto, exibe um alerta informando que a viagem foi finalizada
-      Alert.alert("A viagem foi finalizada com sucesso!");
+      Alert.alert("Éxito","¡El viaje ha sido finalizado con éxito!");
       deleteTruck(truck_id); // Chama a função para excluir o caminhão (se necessário)
       await AsyncStorage.removeItem("currentStep");
     } else {
       console.log("Os destinos não são iguais");
 
       // Finaliza o percurso
-      showPopup("O destino não é igual ao informado, precisa dar uma justificativa");
+      showPopup("El destino informado no corresponde al destino real. Por favor, proporcione una justificación.");
     }
   } catch (error) {
     console.error("Erro ao conferir o destino:", error);

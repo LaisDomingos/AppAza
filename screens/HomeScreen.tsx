@@ -2,13 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown'; // Importando o SelectDropdown
 import { StackNavigationProp } from '@react-navigation/stack';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Importando AsyncStorage
 
 import { getPendingData } from '../database/sqliteDatabase';
 import { handleLogin } from '../functions/HomeScreen/login';
 import { loadData } from '../functions/HomeScreen/loadData';
 import { styles } from '../styles/HomeScreen.styles';
-import { saveDataAsync } from '../functions/HomeScreen/saveDataAsync';
 import { fetchToken } from '../functions/HomeScreen/verifyLogin';
 import { getDrivers } from '../database/database';
 
@@ -102,7 +100,7 @@ export default function HomeScreen({ navigation }: Props) {
           onChangeText={setRut}
           value={rut}
           placeholder="Digite su RUT"
-          keyboardType="numeric"
+          keyboardType="default"
         />
       </View>
 

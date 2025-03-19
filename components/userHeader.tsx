@@ -35,13 +35,13 @@ const UserHeader: React.FC<UserHeaderProps> = ({ name, patente, navigation }) =>
     <View style={styles.containerTop}>
       {/* Nome e patente empilhados */}
       <View style={styles.nameContainer}>
-        <Text style={styles.labelData}>{name || 'Carregando...'}</Text>
-        <Text style={styles.labelData}>{patente || 'Carregando...'}</Text>
+        <Text style={styles.labelData}>{name || 'Cargando...'}</Text>
+        <Text style={styles.labelData}>{patente || 'Cargando...'}</Text>
       </View>
 
       {/* Botão para abrir o pop-up */}
       <TouchableOpacity style={styles.buttonTurn} onPress={openPopup}>
-        <Text style={styles.buttonTextTurn}>Encerrar Turno</Text>
+        <Text style={styles.buttonTextTurn}>Cerrar Turno</Text>
       </TouchableOpacity>
 
       {/* Componente Popup */}

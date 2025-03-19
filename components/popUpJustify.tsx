@@ -37,7 +37,7 @@ const PopupJustify: React.FC<PopupProps> = ({
     console.log("depois do input: ", truck_id)
     deleteTruck(truck_id)
     await AsyncStorage.removeItem("currentStep");
-    Alert.alert("A viagem foi finalizada com sucesso!");
+    Alert.alert("Éxito", "¡El viaje ha sido finalizado con éxito!");
     // Fecha o pop-up após o botão "OK" ser pressionado
     onClose();
   };
@@ -54,14 +54,14 @@ const PopupJustify: React.FC<PopupProps> = ({
           <Text style={styles.message}>{String(message)}</Text>
           <TextInput
             style={styles.input} // Estilo para o input
-            placeholder="Digite algo aqui"
+            placeholder="Escriba la justificación"
             value={inputValue}
             onChangeText={handleInputChange}
           />
           <View style={styles.buttonContainer}>
             <TouchableOpacity onPress={handleOkPress}>
               <Text style={[styles.buttonText, styles.yesText, styles.buttonBorderYes]}>
-                Enviar
+                Guardar
               </Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={onButton2Press}>

@@ -17,7 +17,7 @@ export const getLocation = (): void => {
       },
       error => {
         console.warn('Erro ao obter localização:', error);
-        Alert.alert('Erro', 'Não foi possível obter a localização.');
+        Alert.alert("Error", "No se pudo obtener la ubicación.");
       },
       {
         enableHighAccuracy: false,

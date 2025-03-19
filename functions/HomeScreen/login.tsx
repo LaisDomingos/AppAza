@@ -15,7 +15,7 @@ export const handleLogin = async (
 ) => {
   // Validação dos campos
   if (!nome || !rut || !patente || !driverId) {
-    setErro('Por favor, complete todos os campos obrigatórios.');
+    setErro('Por favor, complete todos los campos obligatorios.');
     return;
   }
 
@@ -65,7 +65,7 @@ export const handleLogin = async (
       }
     } else {
       setErro('An unknown error occurred.');
-      Alert.alert("Erro", 'An unknown error occurred.'); // Exibe o erro como um alerta
+      Alert.alert("Error", 'Ocurrió un error desconocido.'); // Exibe o erro como um alerta
     }
   }
 };

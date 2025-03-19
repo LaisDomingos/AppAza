@@ -2,9 +2,6 @@ import { Alert } from "react-native";
 import { getLocation } from "./getLocation";
 import { fetchTruckByTag } from "../../services/get/tag";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { fetchMaterialById } from "../../services/get/materialList";
-import { deleteTruck, getDataID, getPendingData, markAsSent, updateRadioactiveStatus, updateTruckDetails } from "../../database/sqliteDatabase";
-import sendTruckData from "./sendTruckData";
 import { materialReader } from "./materialReader";
 import { radioactiveReader } from "./radioactiveReader";
 import { weighingReader } from "./weighingReader";
@@ -29,7 +26,6 @@ const obterEtapaSalva = async (): Promise<string | null> => {
   }
 };
 
-
 // Função para validar se o NFC lido corresponde à etapa esperada
 export const readNFC = async (truck_id: number, showPopup: (message: string) => void): Promise<void> => {
 
@@ -37,7 +33,7 @@ export const readNFC = async (truck_id: number, showPopup: (message: string) => 
 
   try {
     // SIMULAÇÃO MANUAL: Número do cartão (RFID) lido manualmente
-    const cardNumber = "RFID125";
+    const cardNumber = "RFID127";
 
     // Busca os dados da tag no backend
     const truckData = await fetchTruckByTag(cardNumber);
@@ -54,7 +50,7 @@ export const readNFC = async (truck_id: number, showPopup: (message: string) => 
 
     // Verifica se o processo atual corresponde à etapa esperada
     if (processoAtual === etapaAtual) {
-      Alert.alert("Cartão Lido", `Número do cartão (RFID): ${cardNumber}`);
+      Alert.alert("Tarjeta Leída", `Número de tarjeta (RFID): ${cardNumber}`);
       // Aqui você pode salvar a próxima etapa no AsyncStorage
       if (etapaAtual === ETAPAS.MATERIAL) {
         await materialReader(truck_id, descricao);
@@ -66,13 +62,13 @@ export const readNFC = async (truck_id: number, showPopup: (message: string) => 
         await destinationReader(truck_id, descricao, showPopup);
       }
     } else {
-      Alert.alert("Erro", `Por favor, leia o NFC para a etapa de ${etapaAtual} primeiro.`);
+      Alert.alert("Error", `Por favor, lea el NFC para la etapa de ${etapaAtual} primero.`);
     }
     console.log("Dados do caminhão:", truckData);
     // navigation.navigate('Scanner');
   } catch (ex) {
     console.warn("Erro ao ler a tag:", ex);
-    Alert.alert("Erro", "Ocorreu um erro ao tentar ler a tag NFC.");
+    Alert.alert("Error", "Ocurrió un error al intentar leer la tarjeta.");
   }
 };
 
