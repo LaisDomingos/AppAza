@@ -7,15 +7,17 @@ export const styles = StyleSheet.create({
         padding: 20,
         justifyContent: 'center',
         alignItems: 'center',
+        paddingTop: 10, // Move tudo um pouco para cima
     },
     logo: {
         width: 200,
         height: 200,
-        marginBottom: 20,
+        marginBottom: 5, 
+        marginTop: -100// Reduz o espaço abaixo da logo
     },
     inputContainer: {
         width: '90%',
-        marginBottom: 20,
+        marginBottom: 15, // Reduzi um pouco a margem inferior
     },
     label: {
         fontSize: 16,
