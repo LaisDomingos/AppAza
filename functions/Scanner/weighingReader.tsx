@@ -4,7 +4,7 @@ import { ETAPAS } from '../../models/etapas';
 import { markAsSent, getPendingData } from '../../database/sqliteDatabase';
 import sendTruckData from './sendTruckData';
 
-export const weighingReader = async (truck_id: number) => {
+export const weighingReader = async (truck_id: number, navigation: any) => {
   try {
     console.log("Tentando enviar dados faltantes, se não houver, deve avisar.");
 
@@ -16,6 +16,9 @@ export const weighingReader = async (truck_id: number) => {
       console.log("❌ Não há dados pendentes para enviar.");
       await AsyncStorage.setItem("currentStep", ETAPAS.P_DESCARGA);
       console.log("Etapa alterada para P_DESCARGA (sem dados pendentes).");
+      navigation.navigate('StartRoute', {
+        truck_id: truck_id // Passa o ID do caminhão
+      });
       return; // Retorna caso não haja dados pendentes
     }
 
@@ -38,6 +41,10 @@ export const weighingReader = async (truck_id: number) => {
       // Altera a etapa para P_DESCARGA
       await AsyncStorage.setItem("currentStep", ETAPAS.P_DESCARGA);
       console.log("Etapa alterada para P_DESCARGA.");
+      console.log("NAVEGANDO PARA OUTRA PAGINA")
+      navigation.navigate('StartRoute', {
+        truck_id: truck_id // Passa o ID do caminhão
+      });
 
     } catch (error) {
       console.error("Erro ao enviar os dados:", error);

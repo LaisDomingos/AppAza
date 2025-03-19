@@ -57,7 +57,7 @@ function ScannerScreen({ navigation, route }: Props) {
 
       <Text style={styles.title}>NFC Scanner</Text>
 
-      <TouchableOpacity style={styles.button} onPress={() => readNFC(truck_id, showPopup)}>
+      <TouchableOpacity style={styles.button} onPress={() => readNFC(truck_id, showPopup, navigation)}>
         <Text style={styles.buttonText}>Scan a Tag</Text>
       </TouchableOpacity>
     </View>

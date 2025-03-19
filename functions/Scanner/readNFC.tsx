@@ -27,13 +27,13 @@ const obterEtapaSalva = async (): Promise<string | null> => {
 };
 
 // Função para validar se o NFC lido corresponde à etapa esperada
-export const readNFC = async (truck_id: number, showPopup: (message: string) => void): Promise<void> => {
+export const readNFC = async (truck_id: number, showPopup: (message: string) => void, navigation: any ): Promise<void> => {
 
   getLocation(); // Chama a função para obter a localização
 
   try {
     // SIMULAÇÃO MANUAL: Número do cartão (RFID) lido manualmente
-    const cardNumber = "RFID127";
+    const cardNumber = "RFID123";
 
     // Busca os dados da tag no backend
     const truckData = await fetchTruckByTag(cardNumber);
@@ -53,13 +53,13 @@ export const readNFC = async (truck_id: number, showPopup: (message: string) => 
       Alert.alert("Tarjeta Leída", `Número de tarjeta (RFID): ${cardNumber}`);
       // Aqui você pode salvar a próxima etapa no AsyncStorage
       if (etapaAtual === ETAPAS.MATERIAL) {
-        await materialReader(truck_id, descricao);
+        await materialReader(truck_id, descricao, navigation);
       } else if (etapaAtual === ETAPAS.PORTAL) {
-        await radioactiveReader(truck_id)
+        await radioactiveReader(truck_id, navigation)
       } else if (etapaAtual === ETAPAS.PESAGEM) {
-        await weighingReader(truck_id)
+        await weighingReader(truck_id, navigation)
       } else {
-        await destinationReader(truck_id, descricao, showPopup);
+        await destinationReader(truck_id, descricao, showPopup, navigation);
       }
     } else {
       Alert.alert("Error", `Por favor, lea el NFC para la etapa de ${etapaAtual} primero.`);

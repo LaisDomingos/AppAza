@@ -3,7 +3,7 @@ import { markAsSent, getDataID, updateRadioactiveStatus} from '../../database/sq
 import { ETAPAS } from '../../models/etapas';
 import sendTruckData from './sendTruckData';
 
-export const radioactiveReader = async (truck_id: number) => {
+export const radioactiveReader = async (truck_id: number, navigation: any) => {
   try {
     // Atualiza o status radioativo do caminhão
     updateRadioactiveStatus(truck_id, true);
@@ -33,4 +33,7 @@ export const radioactiveReader = async (truck_id: number) => {
     console.warn("❌ Falha ao enviar os dados para o caminhão:", error);
   }
   await AsyncStorage.setItem("currentStep", ETAPAS.PESAGEM);
+  navigation.navigate('StartRoute', {
+    truck_id: truck_id // Passa o ID do caminhão
+  });
 };
