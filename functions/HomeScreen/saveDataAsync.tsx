@@ -29,5 +29,7 @@ export async function saveDataAsync(
         await AsyncStorage.removeItem('loginTime');
         // Remove o truck_id
         await AsyncStorage.setItem('truck_id', truck_id.toString());
+        // Remove a etapa
+        await AsyncStorage.removeItem('currentStep');
     }
 }

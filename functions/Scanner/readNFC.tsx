@@ -2,6 +2,13 @@ import { Alert } from "react-native";
 import { getLocation } from "./getLocation";
 import { fetchTruckByTag } from "../../services/get/tag";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { fetchMaterialById } from "../../services/get/materialList";
+import { deleteTruck, getDataID, getPendingData, markAsSent, updateRadioactiveStatus, updateTruckDetails } from "../../database/sqliteDatabase";
+import sendTruckData from "./sendTruckData";
+import { materialReader } from "./materialReader";
+import { radioactiveReader } from "./radioactiveReader";
+import { weighingReader } from "./weighingReader";
+import { destinationReader } from "./destinationReader";
 
 // Definindo as etapas possíveis
 const ETAPAS = {
@@ -22,19 +29,19 @@ const obterEtapaSalva = async (): Promise<string | null> => {
   }
 };
 
+
 // Função para validar se o NFC lido corresponde à etapa esperada
-export const readNFC = async (): Promise<void> => {
+export const readNFC = async (truck_id: number, showPopup: (message: string) => void): Promise<void> => {
+
   getLocation(); // Chama a função para obter a localização
 
   try {
-    console.log("Tentando ler tag...");
-
     // SIMULAÇÃO MANUAL: Número do cartão (RFID) lido manualmente
-    const cardNumber = "RFID123";
+    const cardNumber = "RFID125";
 
     // Busca os dados da tag no backend
     const truckData = await fetchTruckByTag(cardNumber);
-    
+
     // Verifica qual é o processo retornado pela API, colocando tudo em maiúsculas
     const processoAtual = truckData?.processo?.toUpperCase();  // Transforma o processo em maiúsculas
     const descricao = truckData?.descricao
@@ -44,30 +51,23 @@ export const readNFC = async (): Promise<void> => {
     // Verifica qual etapa está salva no AsyncStorage
     const etapaSalva = await obterEtapaSalva();
     let etapaAtual = etapaSalva ? etapaSalva : ETAPAS.MATERIAL; // Se não houver etapa salva, começa com MATERIAL
-    
+
     // Verifica se o processo atual corresponde à etapa esperada
     if (processoAtual === etapaAtual) {
       Alert.alert("Cartão Lido", `Número do cartão (RFID): ${cardNumber}`);
-      
       // Aqui você pode salvar a próxima etapa no AsyncStorage
       if (etapaAtual === ETAPAS.MATERIAL) {
-        console.log("salva o material lido")
-        await AsyncStorage.setItem("currentStep", ETAPAS.PORTAL);
+        await materialReader(truck_id, descricao);
       } else if (etapaAtual === ETAPAS.PORTAL) {
-        console.log("passa o portal radioativo para true e tenta enviar os dados")
-        await AsyncStorage.setItem("currentStep", ETAPAS.PESAGEM);
+        await radioactiveReader(truck_id)
       } else if (etapaAtual === ETAPAS.PESAGEM) {
-        console.log("tenta enviar os dados faltante, se não for deve avisar")
-        await AsyncStorage.setItem("currentStep", ETAPAS.P_DESCARGA);
+        await weighingReader(truck_id)
       } else {
-        console.log("confere se o destino lê corretamente")
-        await AsyncStorage.removeItem("currentStep");
+        await destinationReader(truck_id, descricao, showPopup);
       }
-
     } else {
       Alert.alert("Erro", `Por favor, leia o NFC para a etapa de ${etapaAtual} primeiro.`);
     }
-
     console.log("Dados do caminhão:", truckData);
     // navigation.navigate('Scanner');
   } catch (ex) {

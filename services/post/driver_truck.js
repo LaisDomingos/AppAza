@@ -42,7 +42,7 @@ const fetchDriver = async ({
   }
 
   const apiUrl =
-    "http://localhost:4000/api/drivers";
+    "http://172.20.10.2:4000/api/drivers";
 
   try {
     const payload = {
@@ -64,13 +64,11 @@ const fetchDriver = async ({
       destination_location_code,
       destination_location_name,
     };
-    console.log("Payload: ", payload)
+    console.log("Payload middleware: ", payload)
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: AUTHORIZATION_TOKEN,
-        "Ocp-Apim-Subscription-Key": OCP_APIM_SUBSCRIPTION_KEY,
       },
       body: JSON.stringify(payload),
     });

@@ -54,8 +54,8 @@ export default function DestinationPoint({ navigation, route }: Props) {
   return (
     <>
       <View>
-      <UserHeader name={name} patente={patente} navigation={navigation}/>
-    </View>
+        <UserHeader name={name} patente={patente} navigation={navigation} />
+      </View>
 
       <ScrollView contentContainerStyle={styles.container}>
 

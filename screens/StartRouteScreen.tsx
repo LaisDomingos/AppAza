@@ -8,7 +8,9 @@ import { useFocusEffect } from '@react-navigation/native';
 
 export type RootStackParamList = {
   StartRoute: undefined;
-  Scanner: undefined;
+  Scanner: {
+    truck_id: number
+  };
 };
 
 type StartRouteScreenNavigationProp = StackNavigationProp<RootStackParamList, 'StartRoute'>;
@@ -19,6 +21,7 @@ type Props = {
 };
 
 export default function StartRouteScreen({ navigation, route }: Props) {
+  const { truck_id } = route.params;
   const [name, setName] = useState<string | null>(null);
   const [patente, setPatente] = useState<string | null>(null);
   const [destinoAt, setDestinoAt] = useState<string>("Material");
@@ -60,7 +63,9 @@ export default function StartRouteScreen({ navigation, route }: Props) {
     }, [])
   );
   const handleStartRoute = () => {
-    navigation.navigate('Scanner')
+    navigation.navigate('Scanner', {
+      truck_id: truck_id, // Passa o ID do caminhão
+    });
   };
 
   return (

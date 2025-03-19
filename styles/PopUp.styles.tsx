@@ -42,4 +42,13 @@ export const styles = StyleSheet.create({
     buttonBorderNo: {
         marginLeft: 10
     },
+    input: {
+        width: '100%',
+        height: 100,
+        borderColor: '#17519A',
+        borderWidth: 1,
+        borderRadius: 5,
+        paddingHorizontal: 5,
+        backgroundColor: '#D9D9D9',
+    },
 });

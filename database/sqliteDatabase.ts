@@ -114,15 +114,15 @@ const updateDestinationLocation = (id: number, code: string, name: string): void
 };
 
 //Atualizar material_destination_name, material_destination_code, materialOrigenName, 
-// materialOrigenCode, versionName e versionCode
+//materialOrigenCode, versionName e versionCode
 const updateTruckDetails = (
   id: number,
   materialDestinationName: string,
   materialDestinationCode: string,
+  versionName: string,
+  versionCode: string,
   materialOrigenName: string,
   materialOrigenCode: string,
-  versionName: string,
-  versionCode: string
 ): void => {
   db.transaction((tx: Transaction) => {
     tx.executeSql(
@@ -159,6 +159,34 @@ function getPendingData(): Promise<TruckData[]> {
         [],
         (_, resultSet: ResultSet) => {
           const trucks = resultSet.rows.raw(); // Usando raw() que retorna um array
+          
+          console.log("Trucks encontrados:", trucks); // Adicionando o console log aqui
+          
+          if (trucks.length > 0) {
+            resolve(trucks as TruckData[]); // Resolve com os dados encontrados
+          } else {
+            console.log("Nenhum caminhão encontrado com 'sent = 0'.");
+            resolve([]); // Retorna um array vazio se não houver caminhões pendentes
+          }
+        },
+        (error: any) => {
+          console.error("Erro na consulta SQL:", error); // Adiciona console.log para o erro
+          reject(error);
+        }
+      );
+    });
+  });
+}
+
+// Busca o dado de acordo com o ID
+function getDataID(id: number): Promise<TruckData[]> {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx: Transaction) => {
+      tx.executeSql(
+        'SELECT * FROM trucks WHERE id = ?',
+        [id],
+        (_, resultSet: ResultSet) => {
+          const trucks = resultSet.rows.raw(); // Usando raw() que retorna um array
           if (trucks.length > 0) {
             resolve(trucks as TruckData[]);
           } 
@@ -169,6 +197,7 @@ function getPendingData(): Promise<TruckData[]> {
   });
 }
 
+// Busca todos os dados da tabela
 function getData(): Promise<TruckData[]> {
   return new Promise((resolve, reject) => {
     db.transaction((tx: Transaction) => {
@@ -186,6 +215,7 @@ function getData(): Promise<TruckData[]> {
     });
   });
 }
+
 // Função para marcar dados como enviados
 const markAsSent = async (id: number): Promise<void> => {
   return new Promise((resolve, reject) => {
@@ -196,29 +226,6 @@ const markAsSent = async (id: number): Promise<void> => {
         (_, result) => {
           if (result.rowsAffected > 0) {
              //console.log(`Registro ${id} marcado como enviado no SQLite.`);
-            resolve();
-          } else {
-            console.warn(`Nenhum registro atualizado para ID: ${id}.`);
-          }
-        },
-        (error: any) => {
-          reject(error);
-        }
-      );
-    });
-  });
-};
-
-
-const markAsPending = async (id: number): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx: Transaction) => {
-      tx.executeSql(
-        'UPDATE trucks SET sent = 0 WHERE id = ?',
-        [id],
-        (_, result) => {
-          if (result.rowsAffected > 0) {
-             // console.log(`Registro ${id} marcado como pendente no SQLite.`);
             resolve();
           } else {
             console.warn(`Nenhum registro atualizado para ID: ${id}.`);
@@ -247,19 +254,6 @@ const deleteTruck = (id: number): void => {
   });
 };
 
-
-// Função para excluir dados
-const deleteData = (id: number): void => {
-  db.transaction((tx: Transaction) => {
-    tx.executeSql(
-      'DELETE FROM trucks WHERE id = ?',
-      [id],
-      () => console.log('Dados excluídos com sucesso!'),
-      (error: any) => console.log('Erro ao excluir dados: ', error)
-    );
-  });
-};
-
 // Função para limpar todos os dados da tabela
 const clearAllData = (): void => {
   db.transaction((tx: Transaction) => {
@@ -280,10 +274,9 @@ export {
   getPendingData, 
   insertData, 
   markAsSent, 
-  markAsPending, 
   updateDestinationLocation, 
   updateTruckDetails,
   updateRadioactiveStatus,
-  deleteData,
+  getDataID,
   getData
 }; 
