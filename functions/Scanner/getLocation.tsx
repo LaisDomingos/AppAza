@@ -3,12 +3,12 @@ import { sendLocation } from "../../services/post/location";
 import { saveLocations } from "../../database/location";
 import { Alert } from "react-native";
 
-export const getLocation = (): void => {
+export const getLocation = (tag: string, descricao: string): void => {
     Geolocation.getCurrentPosition(
 
       position => {
         const { latitude, longitude } = position.coords;
-        sendLocation(latitude, longitude, "890190", "Tag Two").catch((error) => {
+        sendLocation(latitude, longitude, tag, descricao).catch((error) => {
           console.warn('Erro ao enviar localização:', error);
 
           // Em caso de erro ao enviar a localização, salva localmente

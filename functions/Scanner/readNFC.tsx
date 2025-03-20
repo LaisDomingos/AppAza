@@ -29,11 +29,11 @@ const obterEtapaSalva = async (): Promise<string | null> => {
 // Função para validar se o NFC lido corresponde à etapa esperada
 export const readNFC = async (truck_id: number, showPopup: (message: string) => void, navigation: any ): Promise<void> => {
 
-  getLocation(); // Chama a função para obter a localização
+   // Chama a função para obter a localização
 
   try {
     // SIMULAÇÃO MANUAL: Número do cartão (RFID) lido manualmente
-    const cardNumber = "RFID127";
+    const cardNumber = "RFID125";
 
     // Busca os dados da tag no backend
     const truckData = await fetchTruckByTag(cardNumber);
@@ -43,7 +43,7 @@ export const readNFC = async (truck_id: number, showPopup: (message: string) => 
     const descricao = truckData?.descricao
     console.log("desc: ", descricao)
     console.log("Processo do caminhão:", processoAtual);
-
+    getLocation(processoAtual, descricao);
     // Verifica qual etapa está salva no AsyncStorage
     const etapaSalva = await obterEtapaSalva();
     let etapaAtual = etapaSalva ? etapaSalva : ETAPAS.MATERIAL; // Se não houver etapa salva, começa com MATERIAL
