@@ -1,5 +1,5 @@
-export const fetchMaterial = async () => {
-    const apiUrl = `https://apim-aza-dev.azure-api.net/radioactive_portal/materialList`;
+export const fetchMaterialById = async (materialId) => {
+    const apiUrl = `https://apim-aza-dev.azure-api.net/radioactive_portal/materialList/`;
 
     try {
         const response = await fetch(apiUrl, {
@@ -15,9 +15,14 @@ export const fetchMaterial = async () => {
 
         const responseData = await response.json();
 
-        // console.log(responseData.data);
+        // Filtra para encontrar o material com o ID correspondente
+        const material = responseData.data.find(item => item.id === materialId);
 
-        return responseData.data;
+        if (!material) {
+            throw new Error(`Material com ID ${materialId} não encontrado.`);
+        }
+
+        return material;
     } catch (error) {
         console.error("Erro ao buscar dados do material:", error);
         throw new Error("Erro ao carregar dados do material.");

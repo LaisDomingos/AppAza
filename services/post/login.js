@@ -34,7 +34,7 @@ export const fetchLogin = async (driver_id, rutNumber) => {
 
     return token;
   } catch (error) {
-    // console.error("Erro ao criar motorista:", error.message);
+    console.error("Erro ao criar motorista:", error.message);
     throw error;
   }
 };

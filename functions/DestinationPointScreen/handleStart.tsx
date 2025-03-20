@@ -29,6 +29,7 @@ export const handleStart = async (
     selectedSetor
   );
   await AsyncStorage.setItem('truck_id', truck_id.toString());
+  await AsyncStorage.setItem('currentStep', 'MATERIAL')
   navigation.navigate('StartRoute', {
     truck_id: truck_id, // Passa o ID do caminhão
   });
