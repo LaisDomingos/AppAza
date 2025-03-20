@@ -5,9 +5,7 @@ import { ETAPAS } from "../../models/etapas";
 
 export const materialReader = async (truck_id: number, descricao: string, navigation: any ) => {
   try {
-    console.log(descricao)
     const material = await fetchMaterialById(descricao);
-    console.log("VEJA O MATERIAL: ", material)
     updateTruckDetails(
       truck_id,
       material.label,
@@ -17,8 +15,6 @@ export const materialReader = async (truck_id: number, descricao: string, naviga
       "",
       ""
     );
-
-    console.log("✅ Material salvo com sucesso!");
 
     await AsyncStorage.setItem("currentStep", ETAPAS.PORTAL);
     navigation.navigate('StartRoute', {

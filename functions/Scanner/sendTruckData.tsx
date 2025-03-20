@@ -60,9 +60,7 @@ async function registerTruckData({
       destination_location_code,
       destination_location_name,
     };
-
-    console.log("Enviando dados do motorista:", driverData);
-
+    
     const response = await fetchDriver(driverData);
 
     console.log("Motorista registrado com sucesso:", response);

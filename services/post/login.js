@@ -7,7 +7,6 @@ export const fetchLogin = async (driver_id, rutNumber) => {
       driver_id,
       rutNumber
     };
-    console.log("Payload enviado:", payload);
 
     const response = await fetch(apiUrl, {
       method: "POST",

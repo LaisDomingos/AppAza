@@ -9,12 +9,8 @@ export const destinationReader = async (
   showPopup: (message: string) => void,
   navigation: any) => {
   try {
-    console.log("Confere se o destino lê corretamente");
-
     // Recupera o destino associado ao truck_id
     const dataID = await getDataID(truck_id);
-    console.log("Ver o destino: ", dataID[0]?.destination_location_name);
-    console.log("Descrição sendo lida: ", descricao);
 
     // Compara o destino com a descrição
     if (dataID[0]?.destination_location_name === descricao) {
@@ -28,12 +24,8 @@ export const destinationReader = async (
       });
       await AsyncStorage.removeItem('currentStep');
     } else {
-      console.log("Os destinos não são iguais");
-
       // Finaliza o percurso
       showPopup("El destino informado no corresponde al destino real. Por favor, proporcione una justificación.");
-      
-      
     }
   } catch (error) {
     console.error("Erro ao conferir o destino:", error);

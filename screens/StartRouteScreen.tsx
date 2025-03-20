@@ -31,8 +31,7 @@ export default function StartRouteScreen({ navigation, route }: Props) {
       // Recuperando os dados do AsyncStorage
       const nameAsync = await AsyncStorage.getItem('name');
       const patenteAsync = await AsyncStorage.getItem('patente');
-      const currentStepAsync = await AsyncStorage.getItem('currentStep'); // Adicionando recuperação do currentStep
-      console.log("etapa: ", currentStepAsync)
+      const currentStepAsync = await AsyncStorage.getItem('currentStep'); 
   
       if (nameAsync) setName(nameAsync);
       if (patenteAsync) setPatente(patenteAsync);

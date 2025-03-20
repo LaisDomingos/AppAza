@@ -8,15 +8,6 @@ export const loadData = async (setMotoristas: React.Dispatch<React.SetStateActio
   setLoading(true);
 
   try {
-    // Primeiro, tentar carregar os dados salvos no dispositivo
-    const savedDrivers = await AsyncStorage.getItem('drivers');
-    const savedTrucks = await AsyncStorage.getItem('trucks');
-
-    if (savedDrivers && savedTrucks) {
-      setMotoristas(JSON.parse(savedDrivers));
-      setPatentesFetch(JSON.parse(savedTrucks));
-    }
-
     // Depois, tentar buscar os dados mais atualizados da API
     const drivers = await fetchDriverFiles();
     const trucks = await fetchTruckFiles();

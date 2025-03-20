@@ -9,9 +9,9 @@ export const styles = StyleSheet.create({
     },
     popup: {
         backgroundColor: '#D9D9D9',
-        padding: 20,
-        borderRadius: 20,
-        width: '80%',
+        padding: 10,
+        borderRadius: 10,
+        width: '90%',
         alignItems: 'center',
     },
     message: {
@@ -45,8 +45,7 @@ export const styles = StyleSheet.create({
     input: {
         width: '100%',
         height: 100,
-        borderColor: '#17519A',
-        borderWidth: 1,
+        borderWidth: 0.5,
         borderRadius: 5,
         paddingHorizontal: 5,
         backgroundColor: '#D9D9D9',

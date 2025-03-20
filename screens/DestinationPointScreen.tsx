@@ -36,6 +36,7 @@ export default function DestinationPoint({ navigation, route }: Props) {
       const patenteAsync = await AsyncStorage.getItem('patente');
       const truckBrandAsync = await AsyncStorage.getItem('truckBrand')
       const rutAsync = await AsyncStorage.getItem('rut')
+      
       setNome(nameAsync || "");
       setPatente(patenteAsync || "");
       setTruckBrand(truckBrandAsync || "");
@@ -45,6 +46,17 @@ export default function DestinationPoint({ navigation, route }: Props) {
     }
   };
 
+  useEffect(() => {
+    // Bloquear a navegação de volta quando o usuário estiver na tela DestinationPoint
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      e.preventDefault();  // Impede a navegação para a página anterior
+      // Opcional: você pode exibir um alerta ou mensagem aqui, se desejar
+    });
+
+    // Retornar a função de limpeza
+    return unsubscribe;
+  }, [navigation]);
+  
   useEffect(() => {
     loadNamePatente();
     loadData().then((setoresData) => {

@@ -63,7 +63,6 @@ function ScannerScreen({ navigation, route }: Props) {
       try {
         const etapaAt = await AsyncStorage.getItem('currentStep');
         if (etapaAt) {
-          console.log('QUAL A ETAPA ATUAL: ', etapaAt)
           setEtapa(etapaAt.toUpperCase());
         }
       } catch (error) {
@@ -80,11 +79,6 @@ function ScannerScreen({ navigation, route }: Props) {
     if (selectedMaterial) {
       // Mostrar informações no console
       selectedMaterial.process.forEach(async (process) => {
-        console.log('Label:', selectedMaterial.id);
-        console.log('Label:', selectedMaterial.label);
-        console.log('Code:', selectedMaterial.code);
-        console.log('Process Description:', process.description);
-        console.log('Process Code:', process.code);
         await materialReader(truck_id, selectedMaterial.id, navigation);
       });
     } else {
@@ -161,7 +155,6 @@ function ScannerScreen({ navigation, route }: Props) {
         buttonMessage1="OK"
         buttonMessage2="Cancelar"
         onButton1Press={() => {
-          console.log('Justificativa enviada');
           closePopup();
         }}
         onButton2Press={closePopup}

@@ -1,7 +1,5 @@
-import { insertData } from '../../database/sqliteDatabase';
 import { fetchLogin } from '../../services/post/login';
 import { Alert } from 'react-native';
-import { saveDataAsync } from './saveDataAsync';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const handleLogin = async (
@@ -36,20 +34,24 @@ export const handleLogin = async (
   try {
     // Faz a requisição de login
     const loginResponse = await fetchLogin(driverId, rut);
+
     // Obter a marca diretamente de truckBrands
     const selectedTruckBrand = truckBrands[patente] || '';
-
+  
     // Limpa o erro e navega para a próxima tela
     setErro(''); // Limpa os erros
-
-    // Navega para a página DestinationPoint, passando os dados necessários
-    navigation.navigate('DestinationPoint');
-
+    const loginTime = new Date().toISOString(); // Pega o momento atual em formato ISO
+    console.log( 'TOKEN LOGIN: ', loginResponse, ' E LOGINTIME LOGIN: ', loginTime)
+    
     await AsyncStorage.setItem('truckBrand', selectedTruckBrand) // Armazena o rut
     await AsyncStorage.setItem('rut', rut); // Armazena o nome
     await AsyncStorage.setItem('name', nome); // Armazena o nome
     await AsyncStorage.setItem('patente', patente); // Armazena a patente
     await AsyncStorage.setItem('auth_token', loginResponse); // Armazenar o token
+    await AsyncStorage.setItem('login_time', loginTime); // Armazenar o horário do login
+    
+    // Navega para a página DestinationPoint, passando os dados necessários
+    navigation.replace('DestinationPoint'); 
   } catch (error) {
     // Exibe a mensagem de erro se falhar no login
     if (error instanceof Error) {

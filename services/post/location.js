@@ -12,8 +12,6 @@ export const sendLocation = async (latitude, longitude, tag, descricao) => {
       descricao
     };
 
-    console.log("Payload enviado:", payload);
-
     // Enviar a requisição POST para a API
     const response = await fetch(apiUrl, {
       method: "POST",

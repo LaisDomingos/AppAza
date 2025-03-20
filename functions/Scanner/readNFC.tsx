@@ -33,7 +33,7 @@ export const readNFC = async (truck_id: number, showPopup: (message: string) => 
 
   try {
     // SIMULAÇÃO MANUAL: Número do cartão (RFID) lido manualmente
-    const cardNumber = "RFID125";
+    const cardNumber = "RFID123";
 
     // Busca os dados da tag no backend
     const truckData = await fetchTruckByTag(cardNumber);
@@ -41,8 +41,7 @@ export const readNFC = async (truck_id: number, showPopup: (message: string) => 
     // Verifica qual é o processo retornado pela API, colocando tudo em maiúsculas
     const processoAtual = truckData?.processo?.toUpperCase();  // Transforma o processo em maiúsculas
     const descricao = truckData?.descricao
-    console.log("desc: ", descricao)
-    console.log("Processo do caminhão:", processoAtual);
+    
     getLocation(processoAtual, descricao);
     // Verifica qual etapa está salva no AsyncStorage
     const etapaSalva = await obterEtapaSalva();
@@ -64,7 +63,6 @@ export const readNFC = async (truck_id: number, showPopup: (message: string) => 
     } else {
       Alert.alert("Error", `Por favor, lea el NFC para la etapa de ${etapaAtual} primero.`);
     }
-    console.log("Dados do caminhão:", truckData);
     // navigation.navigate('Scanner');
   } catch (ex) {
     console.warn("Erro ao ler a tag:", ex);

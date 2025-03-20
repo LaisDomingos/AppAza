@@ -4,9 +4,7 @@ import { updateLocationSentStatus } from "../../database/location";
 
 export const resendLocations = async () => {
     try {
-        const locations = await getLocationsZero(); // Buscar locais com sent = 0
-
-        console.log("Tentando reenviar locais não enviados:", locations);
+        const locations = await getLocationsZero(); 
         
         for (const location of locations) {
             try {
@@ -18,8 +16,6 @@ export const resendLocations = async () => {
                 );
 
                 if (response) {
-                    console.log(`Localização ID ${location.id} enviada com sucesso!`);
-
                     // Atualiza o status para 'sent = 1' apenas se a API confirmar o envio
                     await updateLocationSentStatus(location.id);
                 }

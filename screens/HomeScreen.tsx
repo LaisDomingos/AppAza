@@ -39,7 +39,6 @@ export default function HomeScreen({ navigation }: Props) {
   const [patentesfetch, setPatentesFetch] = useState<string[]>([]); // Estado para patentes buscadas
   const [brands, setBrands] = useState<{ [key: string]: string }>({}); // Mapeamento patente -> marca
   const [truckBrands, setTruckBrands] = useState<{ [key: string]: string }>({}); // Estado para armazenar mapeamento patente -> marca
-  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     getDrivers();
@@ -52,7 +51,7 @@ export default function HomeScreen({ navigation }: Props) {
       setErro,
       setLoading
     );
-    fetchToken(navigation, setToken); 
+    fetchToken(navigation); 
   }, []);
 
 

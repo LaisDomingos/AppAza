@@ -23,11 +23,8 @@ export const radioactiveReader = async (truck_id: number, navigation: any) => {
       radioactive_status: truckData.radioactive_status === 1, // Se for 1, vira true; se for 0, vira false
     });
 
-    console.log("✅ Dados do caminhão enviados com sucesso:", response);
-
     // Marca o caminhão como 'enviado' no banco
     await markAsSent(truck_id);
-    console.log("✅ O campo 'sent' foi atualizado para 1 no banco.");
     
   } catch (error) {
     console.warn("❌ Falha ao enviar os dados para o caminhão:", error);
