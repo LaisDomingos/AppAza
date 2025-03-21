@@ -152,7 +152,6 @@ export default function DestinationPoint({ navigation }: Props) {
           if (selectedTruckId !== null) {
             pendingTrip(navigation, selectedTruckId);
           }
-
           setPopupVisible(false);
         }}
         onButton2Press={() => {

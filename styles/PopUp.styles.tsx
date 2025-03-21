@@ -19,6 +19,12 @@ export const styles = StyleSheet.create({
         marginBottom: 20,
         textAlign: 'center',
     },
+    errorMessage: {
+        fontSize: 14,
+        color: 'red', // Pode ser vermelho para indicar erro
+        textAlign: 'center',
+        marginTop: 5,
+    },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'center',

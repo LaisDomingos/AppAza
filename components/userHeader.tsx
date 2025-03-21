@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { styles } from '../styles/UserHeader.styles';
 import { endTurn } from '../functions/UseHeaderComponent/endTurn';
 import { NavigationProp } from '@react-navigation/native';
 import Popup from './popUp';
+import { getData, TruckData } from '../database/truck_data';
 
 type UserHeaderProps = {
   name: string | null;
@@ -14,6 +15,22 @@ type UserHeaderProps = {
 const UserHeader: React.FC<UserHeaderProps> = ({ name, patente, navigation }) => {
   // Estado para controlar a visibilidade do pop-up
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [pendingData, setPendingData] = useState<TruckData[]>([]); // Estado com os dados pendentes
+  const [errorMessage, setErrorMessage] = useState(''); // Estado para a mensagem de erro
+
+  useEffect(() => {
+    // Função assíncrona para buscar os dados
+    const fetchData = async () => {
+      try {
+        const data = await getData(); // Chama a função assíncrona para buscar os dados
+        setPendingData(data); // Armazena os dados no estado pendingData
+      } catch (error) {
+        console.error('Erro ao buscar os dados:', error); // Trate erros, se necessário
+      }
+    };
+
+    fetchData(); // Chama a função assíncrona
+  }, []);
 
   // Função para abrir o pop-up
   const openPopup = () => {
@@ -26,9 +43,9 @@ const UserHeader: React.FC<UserHeaderProps> = ({ name, patente, navigation }) =>
   };
 
   // Função chamada quando o botão "Sim" é pressionado no pop-up
-  const handleEndTurn = () => {
-    endTurn(navigation);
-    closePopup(); // Fecha o pop-up após chamar a função
+  const handleEndTurn = async () => {
+    // Passando a função setErrorMessage para mostrar a mensagem de erro no Popup
+    await endTurn(navigation);
   };
 
   return (
@@ -48,6 +65,7 @@ const UserHeader: React.FC<UserHeaderProps> = ({ name, patente, navigation }) =>
       <Popup
         visible={isPopupVisible}
         message="¿Estás seguro de que deseas cerrar el turno?"
+        pendingData={pendingData}
         buttonMessage1="Sí"
         buttonMessage2="No"
         onButton1Press={handleEndTurn}
