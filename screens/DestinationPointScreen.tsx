@@ -59,18 +59,28 @@ export default function DestinationPoint({ navigation }: Props) {
 
   // Função para mostrar no popUp que possui viagem em aberto
   const fetchMissingData = async () => {
-    const missingRows = await getData(); // Busca as viagens não finalizadas
+    const missingRows = await getData(); // Busca los viajes no finalizados
 
     if (missingRows.length > 0) {
-      const row = missingRows[0]; // Pegamos apenas a primeira viagem não finalizada
+      const row = missingRows[0]; // Tomamos solo el primer viaje no finalizado
+      console.log("MIUSSING: ", row);
+      let message = `🚨 Hay un viaje no finalizado, aquí están sus datos:\nDestino: ${row.destination_location_name}`;
 
-      const message = row.material_destination_code
-        ? `🚨 Há uma viagem não finalizada! O destino é: ${row.destination_location_name} com o material ${row.material_destination_code}. Deseja continuar com essa viagem?`
-        : `🚨 Há uma viagem não finalizada! O destino é: ${row.destination_location_name}, mas não foi passado nenhum material. Deseja continuar com essa viagem?`;
+      if (!row.material_destination_code) {
+        message += `\nPróxima etapa: Material`;
+      } else if (!row.radioactive_status) {
+        message += `\nMaterial: ${row.material_destination_name}\nPróxima etapa: Portal Radiactivo`;
+      } else if (!row.weight) {
+        message += `\nMaterial: ${row.material_destination_name}\nPróxima etapa: Báscula`;
+      } else {
+        message += `\nMaterial: ${row.material_destination_name}\nPróxima etapa: Destino, confirmar el fin del viaje`;
+      }
+
+      message += `\n¿Desea continuar con el viaje?`;
 
       setPopupMessage(message);
-      setSelectedTruckId(row.id); // Armazena o ID da viagem
-      setPopupVisible(true); // Exibe o popup
+      setSelectedTruckId(row.id); // Almacena el ID del viaje
+      setPopupVisible(true); // Muestra el popup
     }
   };
 
@@ -140,18 +150,15 @@ export default function DestinationPoint({ navigation }: Props) {
         buttonMessage2="Não"
         onButton1Press={() => {
           if (selectedTruckId !== null) {
-            console.log(`O motorista deseja continuar a viagem do ${selectedTruckId}`);       
             pendingTrip(navigation, selectedTruckId);
           }
-        
+
           setPopupVisible(false);
         }}
-        
-        
         onButton2Press={() => {
           if (selectedTruckId !== null) {
             deleteTruck(selectedTruckId);
-            setErrorMessage("Pode iniciar uma nova viagem")
+            setErrorMessage("Puede iniciar un nuevo viaje")
           } else {
             console.error("Erro: Nenhum caminhão selecionado.");
           }

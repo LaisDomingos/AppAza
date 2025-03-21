@@ -23,6 +23,7 @@ export type TruckData = {
   sent: number;
   trySent: number;
   lastSendAttempt: number;
+  weight: number | null;
 };
 
 // Abre o banco de dados SQLite
