@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { fetchMaterialById } from "../../services/get/materialListId";
-import { updateTruckDetails } from "../../database/sqliteDatabase";
+import { updateTruckDetails } from "../../database/truck_data";
 import { ETAPAS } from "../../models/etapas";
 
 export const materialReader = async (truck_id: number, descricao: string, navigation: any ) => {

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { insertData, updateDestinationLocation } from '../../database/sqliteDatabase'; // ajuste o caminho se necessário
+import { insertData, updateDestinationLocation } from '../../database/truck_data'; // ajuste o caminho se necessário
 
 export const handleStart = async (
   selectedTruckBrand: string,

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Modal, Alert } from 'react-native';
 import { styles } from '../styles/PopUp.styles';
-import { deleteTruck } from '../database/sqliteDatabase';
+import { deleteTruck } from '../database/truck_data';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type PopupPropsJustify = {

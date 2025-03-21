@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, TextInput, TouchableOpacity, Image, ScrollView 
 import SelectDropdown from 'react-native-select-dropdown'; // Importando o SelectDropdown
 import { StackNavigationProp } from '@react-navigation/stack';
 
-import { getPendingData } from '../database/sqliteDatabase';
+import { getPendingData } from '../database/truck_data';
 import { handleLogin } from '../functions/HomeScreen/login';
 import { loadData } from '../functions/HomeScreen/loadData';
 import { styles } from '../styles/HomeScreen.styles';

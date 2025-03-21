@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { markAsSent, getDataID, updateRadioactiveStatus} from '../../database/sqliteDatabase'
+import { markAsSent, getDataID, updateRadioactiveStatus} from '../../database/truck_data'
 import { ETAPAS } from '../../models/etapas';
 import sendTruckData from './sendTruckData';
 

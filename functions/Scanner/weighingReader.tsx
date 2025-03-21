@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ETAPAS } from '../../models/etapas';
 
-import { markAsSent, getPendingData } from '../../database/sqliteDatabase';
+import { markAsSent, getPendingData, updateWeight } from '../../database/truck_data';
 import sendTruckData from './sendTruckData';
 
 export const weighingReader = async (truck_id: number, navigation: any) => {
@@ -10,7 +10,11 @@ export const weighingReader = async (truck_id: number, navigation: any) => {
     const pendingData = await getPendingData(); // Função que busca dados com sent = 0
 
     if (!pendingData || pendingData.length === 0) {
+      // Atualiza que passou na pesagem
+      updateWeight(truck_id)
+      
       await AsyncStorage.setItem("currentStep", ETAPAS.P_DESCARGA);
+      
       navigation.navigate('StartRoute', {
         truck_id: truck_id // Passa o ID do caminhão
       });
@@ -28,10 +32,13 @@ export const weighingReader = async (truck_id: number, navigation: any) => {
 
       // Marca os dados como enviados
       await markAsSent(truckData.id);
+    
+      // Atualiza que passou na pesagem
+      updateWeight(truck_id)
 
       // Altera a etapa para P_DESCARGA
       await AsyncStorage.setItem("currentStep", ETAPAS.P_DESCARGA);
-
+      
       navigation.navigate('StartRoute', {
         truck_id: truck_id // Passa o ID do caminhão
       });

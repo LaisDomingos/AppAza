@@ -37,6 +37,7 @@ const db: SQLiteDatabase = SQLite.openDatabase(
   }
 );
 
+// Criar a tabela
 const createTable = (): void => {
   db.transaction((tx: Transaction) => {
     tx.executeSql(
@@ -59,13 +60,14 @@ const createTable = (): void => {
         material_origen_code TEXT,
         destination_location_code TEXT,
         destination_location_name TEXT,
-        sent INTEGER
+        sent INTEGER,
+        weight INTEGER
       )`, // Removida a vírgula depois de "sent INTEGER"
       [],
       () => {
          //console.log('Tabela criada com sucesso!');
         tx.executeSql('SELECT * FROM trucks', [], (_, results) => {
-        console.log('Tabela trucks contém os seguintes dados:', results.rows.raw());
+        // console.log('Tabela trucks contém os seguintes dados:', results.rows.raw());
         });
       },
       (error: any) => console.log('Erro ao criar a tabela: ', error)
@@ -73,6 +75,7 @@ const createTable = (): void => {
   });
 };
 
+// Insere os primeiros dados
 const insertData = (
   unidad: string,
   supplier_name: string,
@@ -118,7 +121,6 @@ const insertData = (
     });
   });
 };
-
 
 //Atualizar destination_location_code e destination_location_name
 const updateDestinationLocation = (id: number, code: string, name: string): void => {
@@ -258,6 +260,7 @@ const markAsSent = async (id: number): Promise<void> => {
   });
 };
 
+// Deleta o dado com o id
 const deleteTruck = (id: number): void => {
   db.transaction((tx: Transaction) => {
     tx.executeSql(
@@ -285,6 +288,37 @@ const clearAllData = (): void => {
   });
 };
 
+const missingData = async (): Promise<TruckData[]> => {
+  try {
+    // Obtém todos os dados da tabela 'trucks'
+    const trucks = await getData();
+    
+    // Filtra as linhas que têm algum dado faltante
+    const rowsWithMissingData = trucks.filter((truck) => {
+      // Verifica se algum campo está faltando (nulo, indefinido ou vazio)
+      return Object.values(truck).some(value => value === null || value === undefined || value === '');
+    });
+
+    return rowsWithMissingData; // Retorna as linhas com dados faltantes
+  } catch (error) {
+    console.error('Erro ao buscar linhas com dados faltantes:', error);
+    return []; // Retorna um array vazio em caso de erro
+  }
+};
+
+//Atualiza que passou pela pesagem
+const updateWeight = (id: number): void => {
+  db.transaction((tx: Transaction) => {
+    tx.executeSql(
+      'UPDATE trucks SET weight = 1 WHERE id = ?',
+      [id],
+      () => console.log(`✅ Peso incrementado para o caminhão com ID ${id}`),
+      (error: any) => console.log(`❌ Erro ao incrementar peso para o ID ${id}: `, error)
+    );
+  });
+};
+
+
 // Exportando as funções para serem usadas em outros módulos
 export { 
   deleteTruck,
@@ -297,5 +331,7 @@ export {
   updateTruckDetails,
   updateRadioactiveStatus,
   getDataID,
-  getData
+  getData,
+  missingData,
+  updateWeight
 }; 

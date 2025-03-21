@@ -33,7 +33,7 @@ export const readNFC = async (truck_id: number, showPopup: (message: string) => 
 
   try {
     // SIMULAÇÃO MANUAL: Número do cartão (RFID) lido manualmente
-    const cardNumber = "RFID123";
+    const cardNumber = "RFID127";
 
     // Busca os dados da tag no backend
     const truckData = await fetchTruckByTag(cardNumber);

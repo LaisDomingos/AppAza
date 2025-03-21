@@ -1,6 +1,6 @@
 import { Alert } from 'react-native';
-import { getDataID } from '../../database/sqliteDatabase';
-import { deleteTruck } from '../../database/sqliteDatabase';
+import { getDataID } from '../../database/truck_data';
+import { deleteTruck } from '../../database/truck_data';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const destinationReader = async (
